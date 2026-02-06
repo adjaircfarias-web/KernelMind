@@ -1,0 +1,131 @@
+# KernelMind - Docker Compose Override for Development
+# This file extends docker-compose.yml with development-specific configurations
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
+
+version: '3.8'
+
+services:
+  # ============================================
+  # PostgreSQL - Development Configuration
+  # ============================================
+  postgres:
+    ports:
+      - "5432:5432"  # Ensure local access for development tools
+    environment:
+      - POSTGRES_PASSWORD=postgres123  # Fixed password for dev
+    volumes:
+      # Mount local init scripts for easy editing
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    # Lower memory limits for dev machines
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  # ============================================
+  # Ollama - Development Configuration
+  # ============================================
+  ollama:
+    ports:
+      - "11434:11434"  # Ensure local access for testing
+    # Use smaller model for faster development
+    entrypoint: >
+      sh -c "
+        ollama serve &
+        sleep 5
+        echo 'Pulling development models...'
+        ollama pull llama3.1:8b
+        ollama pull nomic-embed-text
+        echo 'Models ready!'
+        wait
+      "
+    # Lower memory for development (adjust based on your machine)
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+
+  # ============================================
+  # Backend - Development Configuration
+  # ============================================
+  backend:
+    build:
+      target: development  # Use development stage
+    ports:
+      - "5076:8080"  # API port
+      - "9229:9229"  # Debug port for VS Code
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      # Enable hot reload
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      - DOTNET_WATCH_RESTART_ON_RUDE_EDIT=1
+    volumes:
+      # Mount source code for hot reload
+      - ./src/KernelMind.Api:/app:delegated
+      - ./src/KernelMind.Core:/src/KernelMind.Core:delegated
+      - ./src/KernelMind.Domain:/src/KernelMind.Domain:delegated
+      - ./src/KernelMind.Infrastructure:/src/KernelMind.Infrastructure:delegated
+      # Preserve NuGet packages
+      - backend_nuget:/root/.nuget/packages
+      # Preserve build artifacts
+      - backend_bin:/app/bin
+      - backend_obj:/app/obj
+    command: >
+      sh -c "
+        dotnet restore &&
+        dotnet watch run --project KernelMind.Api.csproj --urls http://+:8080
+      "
+    # Higher memory for development with hot reload
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 1G
+
+  # ============================================
+  # Frontend - Development Configuration
+  # ============================================
+  frontend:
+    build:
+      target: development  # Use development stage
+    ports:
+      - "4200:4200"  # Angular dev server
+    environment:
+      - NODE_ENV=development
+      - API_URL=http://localhost:5076  # Direct to backend for CORS
+    volumes:
+      # Mount source code for hot reload
+      - ./src/KernelMind.Web:/app:delegated
+      # Preserve node_modules
+      - frontend_node_modules:/app/node_modules
+      # Preserve Angular cache
+      - frontend_angular_cache:/app/.angular
+    command: >
+      sh -c "
+        npm install &&
+        ng serve --host 0.0.0.0 --port 4200 --poll 2000 --disable-host-check
+      "
+    # stdin_open and tty for interactive mode
+    stdin_open: true
+    tty: true
+
+# ============================================
+# Development Volumes
+# ============================================
+volumes:
+  backend_nuget:
+    driver: local
+  backend_bin:
+    driver: local
+  backend_obj:
+    driver: local
+  frontend_node_modules:
+    driver: local
+  frontend_angular_cache:
+    driver: local

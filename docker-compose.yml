@@ -1,0 +1,186 @@
+# KernelMind - Docker Compose Configuration
+# Complete infrastructure orchestration for local development
+
+version: '3.8'
+
+services:
+  # ============================================
+  # PostgreSQL + pgvector Database
+  # ============================================
+  postgres:
+    build:
+      context: ./docker/postgres
+      dockerfile: Dockerfile
+    container_name: kernelmind-postgres
+    hostname: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres123}
+      POSTGRES_DB: ${POSTGRES_DB:-kernelmind}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - kernelmind-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-kernelmind}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+
+  # ============================================
+  # Ollama - Local LLM Server
+  # ============================================
+  ollama:
+    build:
+      context: ./docker/ollama
+      dockerfile: Dockerfile
+    container_name: kernelmind-ollama
+    hostname: ollama
+    restart: unless-stopped
+    ports:
+      - "${OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - kernelmind-network
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_ORIGINS=*
+    entrypoint: >
+      sh -c "
+        ollama serve &
+        sleep 5
+        echo 'Pulling required models...'
+        ollama pull ${OLLAMA_MODEL:-llama3.1:8b}
+        ollama pull ${OLLAMA_EMBEDDING_MODEL:-nomic-embed-text}
+        echo 'Models ready!'
+        wait
+      "
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        reservations:
+          memory: 4G
+
+  # ============================================
+  # Backend - .NET 10 Web API
+  # ============================================
+  backend:
+    build:
+      context: ./src/KernelMind.Api
+      dockerfile: Dockerfile
+    container_name: kernelmind-backend
+    hostname: backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-5076}:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Production}
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=${POSTGRES_DB:-kernelmind};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres123}
+      - Ollama__Url=http://ollama:11434
+      - Ollama__Model=${OLLAMA_MODEL:-llama3.1:8b}
+      - Ollama__Temperature=${OLLAMA_TEMPERATURE:-0.7}
+      - Ollama__MaxTokens=${OLLAMA_MAX_TOKENS:-2048}
+      - Jwt__Secret=${JWT_SECRET:-your-super-secret-jwt-key-2026}
+      - Jwt__Issuer=${JWT_ISSUER:-KernelMind}
+      - Jwt__Audience=${JWT_AUDIENCE:-KernelMindUsers}
+      - Jwt__ExpirationHours=${JWT_EXPIRATION_HOURS:-24}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    networks:
+      - kernelmind-network
+    volumes:
+      - backend_logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+
+  # ============================================
+  # Frontend - Angular 19 Application
+  # ============================================
+  frontend:
+    build:
+      context: ./src/KernelMind.Web
+      dockerfile: Dockerfile
+    container_name: kernelmind-frontend
+    hostname: frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-4200}:80"
+    environment:
+      - NGINX_PORT=80
+      - API_URL=http://backend:8080
+    depends_on:
+      - backend
+    networks:
+      - kernelmind-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  kernelmind-network:
+    driver: bridge
+    name: kernelmind-network
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  postgres_data:
+    driver: local
+    name: kernelmind_postgres_data
+  ollama_data:
+    driver: local
+    name: kernelmind_ollama_data
+  backend_logs:
+    driver: local
+    name: kernelmind_backend_logs
