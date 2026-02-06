@@ -1,11 +1,11 @@
 # KernelMind.Domain
 
-## 📋 Propósito
-Camada de domínio contendo entidades, value objects, interfaces e regras de negócio puras.
-Segue os princípios de DDD (Domain-Driven Design).
+## Purpose
+Domain layer containing entities, value objects, interfaces, and pure business rules.
+Follows Domain-Driven Design (DDD) principles.
 
-## 📦 Responsabilidades
-- **Entidades (records):**
+## Responsibilities
+- **Entities (records):**
   - Pizza
   - Order
   - OrderItem
@@ -14,17 +14,16 @@ Segue os princípios de DDD (Domain-Driven Design).
   - ChatMessage
 - **Value Objects (records):**
   - Money
-  - Address
-- **Interfaces de repositório:**
+- **Repository Interfaces:**
   - IPizzaRepository
   - IOrderRepository
   - IChatSessionRepository
-- **Enums e constantes**
+- **Enums and Constants**
 
-## 🔗 Referências
-- Nenhuma (Domain é a camada mais interna)
+## References
+- None (Domain is the innermost layer)
 
-## 📁 Estrutura Esperada
+## Expected Structure
 ```
 KernelMind.Domain/
 ├── Entities/
@@ -35,8 +34,7 @@ KernelMind.Domain/
 │   ├── ChatSession.cs
 │   └── ChatMessage.cs
 ├── ValueObjects/
-│   ├── Money.cs
-│   └── Address.cs
+│   └── Money.cs
 ├── Interfaces/
 │   ├── IPizzaRepository.cs
 │   ├── IOrderRepository.cs
@@ -46,13 +44,13 @@ KernelMind.Domain/
 └── README.md
 ```
 
-## 📝 Padrões de Código
-- **Preferir `record` ao invés de `class`** para entidades e DTOs
-- Usar `init` setters para propriedades imutáveis
-- Nomes em inglês: `Pizza`, `Order`, `Customer`
+## Code Standards
+- **Prefer `record` over `class`** for entities and DTOs
+- Use `init` setters for immutable properties
+- English names: `Pizza`, `Order`, `Customer`
 
-## 🚀 Comandos Úteis
+## Useful Commands
 ```bash
-# Criar projeto
+# Create project
 dotnet new classlib -n KernelMind.Domain
 ```

@@ -1,29 +1,29 @@
 # Documentation
 
-## 📋 Propósito
-Documentação técnica e de negócio do projeto KernelMind.
+## Purpose
+Technical and business documentation for the KernelMind project.
 
-## 📁 Documentação Disponível
+## Available Documentation
 
 ### Plan/
-Localizado em `../Plan/`:
-- `PLANO-IMPLEMENTACAO.md` - Plano técnico detalhado
-- `ARQUITETURA-COMPLETA.md` - Arquitetura do sistema
-- `USER-STORIES.md` - Histórias de usuário (39 US)
+Located in `../Plan/`:
+- `PLANO-IMPLEMENTACAO.md` - Detailed technical plan
+- `ARQUITETURA-COMPLETA.md` - System architecture
+- `USER-STORIES.md` - User stories (39 US)
 
-### Docs/ (Este diretório)
-Documentação complementar:
-- `API.md` - Documentação da API REST
-- `DEPLOYMENT.md` - Guia de deploy
-- `CONTRIBUTING.md` - Guia de contribuição
-- `CHANGELOG.md` - Histórico de alterações
+### Docs/ (This directory)
+Additional documentation:
+- `API.md` - REST API documentation
+- `DEPLOYMENT.md` - Deployment guide
+- `CONTRIBUTING.md` - Contribution guide
+- `CHANGELOG.md` - Change history
 
-## 📝 Padrões de Documentação
+## Documentation Standards
 
-### Código
-- Comentários podem ser em português
-- XML Documentation em inglês
-- READMEs em português
+### Code
+- Comments can be in Portuguese
+- XML Documentation in English
+- READMEs in English
 
 ### Commits
 ```
@@ -33,7 +33,7 @@ docs: update API documentation
 refactor: improve chat service performance
 ```
 
-## 🔗 Links Úteis
+## Useful Links
 - [Semantic Kernel Docs](https://learn.microsoft.com/en-us/semantic-kernel/)
 - [Angular 19 Docs](https://angular.io/docs)
 - [PostgreSQL pgvector](https://github.com/pgvector/pgvector)

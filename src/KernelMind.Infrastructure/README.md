@@ -1,28 +1,27 @@
 # KernelMind.Infrastructure
 
-## 📋 Propósito
-Camada de infraestrutura contendo implementações concretas de acesso a dados, integrações externas e serviços de infraestrutura.
+## Purpose
+Infrastructure layer containing concrete implementations for data access, external integrations, and infrastructure services.
 
-## 📦 Responsabilidades
+## Responsibilities
 - **Data Access:**
   - AppDbContext (Entity Framework Core)
   - Migrations
-  - Configurações de entidades
+  - Entity configurations
 - **Repositories:**
   - PizzaRepository
   - OrderRepository
   - ChatSessionRepository
-- **Integrações Externas:**
-  - OllamaClient (comunicação com LLM local)
-  - VectorStore (pgvector para RAG)
-- **Serviços de Infraestrutura:**
-  - CacheService
+- **External Integrations:**
+  - OllamaClient (local LLM communication)
+  - VectorStore (pgvector for RAG)
+- **Infrastructure Services:**
   - LoggingService
 
-## 🔗 Referências
+## References
 - KernelMind.Domain
 
-## 📁 Estrutura Esperada
+## Expected Structure
 ```
 KernelMind.Infrastructure/
 ├── Data/
@@ -34,32 +33,32 @@ KernelMind.Infrastructure/
 │   └── ChatSessionRepository.cs
 ├── Services/
 │   ├── OllamaClient.cs
-│   ├── VectorStoreService.cs
-│   └── CacheService.cs
+│   └── LoggingService.cs
 ├── Migrations/
 └── README.md
 ```
 
-## 🗄️ Banco de Dados
-- **PostgreSQL 16** com extensão **pgvector**
-- Tabelas principais:
-  - pizzas (com vetores de embedding)
+## Database
+- **PostgreSQL 16** with **pgvector** extension
+- Main tables:
+  - pizzas (with embedding vectors)
   - orders
   - order_items
   - customers
   - chat_sessions
   - chat_messages
 
-## 🚀 Comandos Úteis
+## Useful Commands
 ```bash
-# Criar projeto
+# Create project
 dotnet new classlib -n KernelMind.Infrastructure
 
-# Adicionar referência
+# Add reference
 dotnet add reference ../KernelMind.Domain
 
-# Adicionar pacotes NuGet
+# Add NuGet packages
 dotnet add package Microsoft.EntityFrameworkCore
 dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
 dotnet add package Pgvector.EntityFrameworkCore
+dotnet add package Microsoft.Extensions.AI.Ollama
 ```

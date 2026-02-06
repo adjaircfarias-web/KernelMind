@@ -1,44 +1,44 @@
 # Docker Configuration
 
-## 📋 Propósito
-Configurações Docker para todos os serviços do projeto KernelMind.
+## Purpose
+Docker configurations for all KernelMind project services.
 
-## 📁 Estrutura
+## Structure
 ```
 docker/
 ├── postgres/          # PostgreSQL + pgvector
-├── ollama/           # LLM Local (llama3.1:70b)
-└── nginx/            # Reverse Proxy (produção)
+├── ollama/           # Local LLM (llama3.1:70b)
+└── nginx/            # Reverse Proxy (production)
 ```
 
-## 🐳 Serviços
+## Services
 
 ### PostgreSQL + pgvector
-- **Imagem:** postgres:16-alpine com pgvector
-- **Porta:** 5432
-- **Extensão:** pgvector para embeddings vetoriais
+- **Image:** postgres:16-alpine with pgvector
+- **Port:** 5432
+- **Extension:** pgvector for vector embeddings
 - **Volume:** postgres_data
 
 ### Ollama
-- **Imagem:** ollama/ollama:latest
-- **Porta:** 11434
-- **Modelo:** llama3.1:70b (baixado na primeira execução)
+- **Image:** ollama/ollama:latest
+- **Port:** 11434
+- **Model:** llama3.1:70b (downloaded on first run)
 - **Volume:** ollama_data
 
-### Nginx (Produção)
-- **Imagem:** nginx:alpine
-- **Porta:** 80/443
-- **Função:** Reverse proxy e load balancer
+### Nginx (Production)
+- **Image:** nginx:alpine
+- **Port:** 80/443
+- **Function:** Reverse proxy and load balancer
 
-## 🚀 Comandos Úteis
+## Useful Commands
 ```bash
-# Subir todos os serviços
+# Start all services
 docker-compose up -d
 
-# Ver logs
+# View logs
 docker-compose logs -f
 
-# Parar serviços
+# Stop services
 docker-compose down
 
 # Rebuild

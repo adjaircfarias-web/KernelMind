@@ -1,52 +1,61 @@
 # Scripts
 
-## 📋 Propósito
-Scripts de automação para desenvolvimento, deployment e operações.
+## Purpose
+Automation scripts for development, deployment, and operations.
 
-## 📁 Scripts Disponíveis
+## Available Scripts
 
 ### `docker-start.ps1`
-Inicia todos os containers Docker necessários para desenvolvimento.
+Starts all Docker containers needed for development.
 ```powershell
 .\docker-start.ps1
 ```
 
 ### `docker-stop.ps1`
-Para todos os containers Docker.
+Stops all Docker containers.
 ```powershell
 .\docker-stop.ps1
 ```
 
 ### `docker-logs.ps1`
-Exibe logs dos containers em tempo real.
+Displays container logs in real-time.
 ```powershell
 .\docker-logs.ps1
 ```
 
-## 🚀 Comandos Úteis
+## Useful Commands
 
-### Setup Inicial
+### Initial Setup
 ```powershell
-# 1. Iniciar infraestrutura
+# 1. Start infrastructure
 .\docker-start.ps1
 
-# 2. Aguardar PostgreSQL estar pronto
-# (verificar healthcheck)
+# 2. Wait for PostgreSQL to be ready
+# (check healthcheck)
 
-# 3. Aplicar migrations
+# 3. Apply migrations
 cd ..\src\KernelMind.Api
 dotnet ef database update
 
-# 4. Iniciar API
+# 4. Start API
 dotnet run
 ```
 
-### Desenvolvimento
+### Development
 ```powershell
-# Reset completo
+# Complete reset
 .\docker-stop.ps1
 .\docker-start.ps1
 
-# Ver status
+# Check status
 docker-compose ps
+```
+
+### Using Makefile
+```bash
+make setup        # Complete setup
+make up          # Start Docker
+make down        # Stop Docker
+make logs        # View logs
+make db-update   # Apply migrations
 ```

@@ -1,52 +1,52 @@
 # Tests
 
-## 📋 Propósito
-Projetos de teste automatizados para garantir qualidade do código.
+## Purpose
+Automated test projects to ensure code quality.
 
-## 📁 Estrutura Esperada
+## Expected Structure
 ```
 tests/
-├── KernelMind.UnitTests/           # Testes unitários
-├── KernelMind.IntegrationTests/    # Testes de integração
-└── KernelMind.E2ETests/            # Testes end-to-end
+├── KernelMind.UnitTests/           # Unit tests
+├── KernelMind.IntegrationTests/    # Integration tests
+└── KernelMind.E2ETests/            # End-to-end tests
 ```
 
-## 🧪 Tipos de Testes
+## Test Types
 
 ### Unit Tests
-- Testam lógica de negócio isolada
-- Mockam dependências externas
-- Rápidos e determinísticos
+- Test isolated business logic
+- Mock external dependencies
+- Fast and deterministic
 
 ### Integration Tests
-- Testam integração entre componentes
-- Usam banco de dados em memória ou container
-- Testam repositories e services
+- Test component integration
+- Use in-memory or container database
+- Test repositories and services
 
 ### E2E Tests
-- Testam fluxos completos
-- Simulam interação do usuário
-- Testam API e frontend integrados
+- Test complete flows
+- Simulate user interaction
+- Test integrated API and frontend
 
-## 🚀 Comandos Úteis
+## Useful Commands
 ```bash
-# Executar todos os testes
+# Run all tests
 dotnet test
 
-# Executar com cobertura
+# Run with coverage
 dotnet test --collect:"XPlat Code Coverage"
 
-# Executar testes específicos
+# Run specific tests
 dotnet test --filter "FullyQualifiedName~UnitTests"
 
 # Verbose output
 dotnet test --logger "console;verbosity=detailed"
 ```
 
-## 📊 Cobertura de Código
-Meta: mínimo 70% de cobertura
+## Code Coverage
+Goal: minimum 70% coverage
 ```bash
-# Gerar relatório de cobertura
+# Generate coverage report
 dotnet test --collect:"XPlat Code Coverage"
 reportgenerator -reports:**/coverage.cobertura.xml -targetdir:coveragereport
 ```

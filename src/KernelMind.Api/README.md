@@ -1,23 +1,23 @@
 # KernelMind.Api
 
-## 📋 Propósito
-Projeto ASP.NET 10 Web API - Ponto de entrada da aplicação.
-Contém os controllers, middlewares, configurações e injeção de dependências.
+## Purpose
+ASP.NET 10 Web API project - Application entry point.
+Contains controllers, middlewares, configuration, and dependency injection.
 
-## 📦 Responsabilidades
-- Controllers REST para endpoints da API
-- Configuração do Semantic Kernel
-- Configuração do HTTP Streaming (IAsyncEnumerable)
+## Responsibilities
+- REST Controllers for API endpoints
+- Semantic Kernel configuration
+- HTTP Streaming configuration (IAsyncEnumerable)
 - Middlewares (logging, CORS, etc.)
 - Swagger/OpenAPI documentation
 - Health checks
 
-## 🔗 Referências
+## References
 - KernelMind.Core
 - KernelMind.Domain
 - KernelMind.Infrastructure
 
-## 📁 Estrutura Esperada
+## Expected Structure
 ```
 KernelMind.Api/
 ├── Controllers/
@@ -30,18 +30,18 @@ KernelMind.Api/
 └── appsettings.Development.json
 ```
 
-## 🚀 Comandos Úteis
+## Useful Commands
 ```bash
-# Criar projeto
+# Create project
 dotnet new webapi -n KernelMind.Api
 
-# Adicionar referências
+# Add references
 dotnet add reference ../KernelMind.Core
 dotnet add reference ../KernelMind.Domain
 dotnet add reference ../KernelMind.Infrastructure
 
-# Adicionar pacotes NuGet
-dotnet add package Microsoft.SemanticKernel
-dotnet add package Microsoft.SemanticKernel.Plugins.Core
+# Add NuGet packages
+dotnet add package Microsoft.Extensions.AI
+dotnet add package Microsoft.Extensions.AI.Ollama
 dotnet add package Swashbuckle.AspNetCore
 ```

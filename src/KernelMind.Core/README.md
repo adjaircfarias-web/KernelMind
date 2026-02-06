@@ -1,24 +1,23 @@
 # KernelMind.Core
 
-## 📋 Propósito
-Camada de aplicação contendo a lógica de negócio, plugins do Semantic Kernel e orquestração.
+## Purpose
+Application layer containing business logic, Semantic Kernel plugins, and orchestration.
 
-## 📦 Responsabilidades
-- **Plugins do Semantic Kernel:**
-  - MenuPlugin (consulta cardápio)
-  - OrderPlugin (gerenciamento de pedidos)
-  - CalculationPlugin (cálculos de valores)
-  - ContextPlugin (contexto da conversa)
-- **Serviços de aplicação:**
-  - ChatService (orquestração do chat)
-  - OrderService (processamento de pedidos)
-  - EmbeddingService (RAG - geração de embeddings)
-- **DTOs e modelos de aplicação**
+## Responsibilities
+- **Semantic Kernel Plugins:**
+  - MenuPlugin (menu query)
+  - OrderPlugin (order management)
+  - CalculationPlugin (price calculations)
+  - ContextPlugin (conversation context)
+- **Application Services:**
+  - ChatService (chat orchestration)
+  - EmbeddingService (RAG - embedding generation)
+- **Application DTOs and Models**
 
-## 🔗 Referências
+## References
 - KernelMind.Domain
 
-## 📁 Estrutura Esperada
+## Expected Structure
 ```
 KernelMind.Core/
 ├── Plugins/
@@ -28,25 +27,19 @@ KernelMind.Core/
 │   └── ContextPlugin.cs
 ├── Services/
 │   ├── ChatService.cs
-│   ├── OrderService.cs
 │   └── EmbeddingService.cs
-├── DTOs/
-│   ├── ChatRequest.cs
-│   ├── ChatResponse.cs
-│   └── OrderDto.cs
 └── README.md
 ```
 
-## 🚀 Comandos Úteis
+## Useful Commands
 ```bash
-# Criar projeto
+# Create project
 dotnet new classlib -n KernelMind.Core
 
-# Adicionar referência
+# Add reference
 dotnet add reference ../KernelMind.Domain
 
-# Adicionar pacotes NuGet
-dotnet add package Microsoft.SemanticKernel
-dotnet add package Microsoft.SemanticKernel.Plugins.Core
-dotnet add package Microsoft.Extensions.AI.Abstractions
+# Add NuGet packages
+dotnet add package Microsoft.Extensions.AI
+dotnet add package Microsoft.Extensions.AI.Ollama
 ```

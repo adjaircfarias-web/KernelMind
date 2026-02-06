@@ -1,23 +1,23 @@
 # KernelMind.Web
 
-## 📋 Propósito
-Frontend Angular 19 - Interface do usuário para o chatbot de pedidos de pizza.
+## Purpose
+Angular 19 Frontend - User interface for the pizza ordering chatbot.
 
-## 📦 Responsabilidades
-- Interface de chat interativa
-- Consumo da API via HTTP Streaming (Fetch API)
-- Gerenciamento de estado do chat
-- Exibição de cardápio
-- Acompanhamento de pedidos
+## Responsibilities
+- Interactive chat interface
+- API consumption via HTTP Streaming (Fetch API)
+- Chat state management
+- Menu display
+- Order tracking
 
-## 🎨 Tecnologias
+## Technologies
 - Angular 19
 - TypeScript 5
 - RxJS (reactive programming)
 - Angular Material (UI components)
-- HTTP Streaming com Fetch API
+- HTTP Streaming with Fetch API
 
-## 📁 Estrutura Esperada
+## Expected Structure
 ```
 KernelMind.Web/
 ├── src/
@@ -42,10 +42,10 @@ KernelMind.Web/
 └── README.md
 ```
 
-## 🌐 HTTP Streaming
-O frontend consome a API usando HTTP Streaming com `IAsyncEnumerable`:
+## HTTP Streaming
+The frontend consumes the API using HTTP Streaming with `IAsyncEnumerable`:
 ```typescript
-// Exemplo de consumo do streaming
+// Streaming consumption example
 async* streamChat(message: string): AsyncGenerator<string> {
   const response = await fetch('/api/chat/stream', {
     method: 'POST',
@@ -61,17 +61,17 @@ async* streamChat(message: string): AsyncGenerator<string> {
 }
 ```
 
-## 🚀 Comandos Úteis
+## Useful Commands
 ```bash
-# Criar projeto
+# Create project
 ng new KernelMind.Web --routing --style=scss
 
-# Instalar Angular Material
+# Install Angular Material
 ng add @angular/material
 
-# Servir em desenvolvimento
+# Serve in development
 ng serve
 
-# Build para produção
+# Build for production
 ng build --configuration production
 ```
