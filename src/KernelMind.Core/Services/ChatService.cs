@@ -7,7 +7,7 @@ namespace KernelMind.Core.Services;
 /// <summary>
 /// Service that orchestrates chat interactions using Ollama
 /// </summary>
-public class ChatService
+public class ChatService : IKernelService
 {
     private readonly IChatClient _chatClient;
     private readonly ILogger<ChatService> _logger;
@@ -32,6 +32,8 @@ public class ChatService
         _contextPlugin = contextPlugin;
     }
 
+    public IChatClient ChatClient => _chatClient;
+
     /// <summary>
     /// Processes a user message and returns the assistant response
     /// </summary>
@@ -44,14 +46,12 @@ public class ChatService
 
         try
         {
-            // Build chat history with system prompt
             var messages = new List<ChatMessage>
             {
                 new ChatMessage(ChatRole.System, GetSystemPrompt()),
                 new ChatMessage(ChatRole.User, message)
             };
 
-            // Get response from LLM
             var response = await _chatClient.CompleteAsync(messages, cancellationToken: ct);
 
             var responseText = response.Message.Text ?? "Desculpe, não consegui processar sua mensagem.";
