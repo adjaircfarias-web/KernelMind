@@ -1,11 +1,17 @@
+using AIChatMessage = Microsoft.Extensions.AI.ChatMessage;
+using AIChatRole = Microsoft.Extensions.AI.ChatRole;
+using DomainChatRole = KernelMind.Domain.Entities.ChatRole;
+using DomainChatMessage = KernelMind.Domain.Entities.ChatMessage;
 using KernelMind.Core.Plugins;
+using KernelMind.Domain.Entities;
+using KernelMind.Domain.Interfaces;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 
 namespace KernelMind.Core.Services;
 
 /// <summary>
-/// Service that orchestrates chat interactions using Ollama
+/// Service that orchestrates chat interactions using Ollama with streaming support
 /// </summary>
 public class ChatService : IKernelService
 {
@@ -15,6 +21,7 @@ public class ChatService : IKernelService
     private readonly OrderPlugin _orderPlugin;
     private readonly CalculationPlugin _calculationPlugin;
     private readonly ContextPlugin _contextPlugin;
+    private readonly IChatSessionRepository _chatSessionRepository;
 
     public ChatService(
         IChatClient chatClient,
@@ -22,7 +29,8 @@ public class ChatService : IKernelService
         MenuPlugin menuPlugin,
         OrderPlugin orderPlugin,
         CalculationPlugin calculationPlugin,
-        ContextPlugin contextPlugin)
+        ContextPlugin contextPlugin,
+        IChatSessionRepository chatSessionRepository)
     {
         _chatClient = chatClient;
         _logger = logger;
@@ -30,6 +38,7 @@ public class ChatService : IKernelService
         _orderPlugin = orderPlugin;
         _calculationPlugin = calculationPlugin;
         _contextPlugin = contextPlugin;
+        _chatSessionRepository = chatSessionRepository;
     }
 
     public IChatClient ChatClient => _chatClient;
@@ -46,18 +55,33 @@ public class ChatService : IKernelService
 
         try
         {
-            var messages = new List<ChatMessage>
+            var chatSession = await GetOrCreateSessionAsync(sessionId, ct);
+            
+            var messages = new List<AIChatMessage>
             {
-                new ChatMessage(ChatRole.System, GetSystemPrompt()),
-                new ChatMessage(ChatRole.User, message)
+                new AIChatMessage(AIChatRole.System, GetSystemPrompt())
             };
 
-            var response = await _chatClient.CompleteAsync(messages, cancellationToken: ct);
+            foreach (var chatMessage in chatSession.Messages)
+            {
+                var role = chatMessage.Role switch
+                {
+                    DomainChatRole.System => AIChatRole.System,
+                    DomainChatRole.Assistant => AIChatRole.Assistant,
+                    _ => AIChatRole.User
+                };
+                messages.Add(new AIChatMessage(role, chatMessage.Content));
+            }
 
+            messages.Add(new AIChatMessage(AIChatRole.User, message));
+
+            var response = await _chatClient.CompleteAsync(messages, cancellationToken: ct);
             var responseText = response.Message.Text ?? "Desculpe, não consegui processar sua mensagem.";
-            
+
+            await SaveMessageAsync(sessionId, "assistant", responseText, ct);
+
             _logger.LogInformation("Response generated for session {SessionId}", sessionId);
-            
+
             return responseText;
         }
         catch (Exception ex)
@@ -77,10 +101,10 @@ public class ChatService : IKernelService
     {
         _logger.LogInformation("Streaming message for session {SessionId}: {Message}", sessionId, message);
 
-        var messages = new List<ChatMessage>
+        var messages = new List<AIChatMessage>
         {
-            new ChatMessage(ChatRole.System, GetSystemPrompt()),
-            new ChatMessage(ChatRole.User, message)
+            new AIChatMessage(AIChatRole.System, GetSystemPrompt()),
+            new AIChatMessage(AIChatRole.User, message)
         };
 
         await foreach (var update in _chatClient.CompleteStreamingAsync(messages, cancellationToken: ct))
@@ -92,6 +116,38 @@ public class ChatService : IKernelService
             {
                 yield return update.Text;
             }
+        }
+    }
+
+    private async Task<ChatSession> GetOrCreateSessionAsync(string sessionId, CancellationToken ct)
+    {
+        var session = await _chatSessionRepository.GetByTokenAsync(sessionId, ct);
+        
+        if (session == null)
+        {
+            session = new ChatSession
+            {
+                SessionToken = sessionId,
+                IsActive = true
+            };
+            await _chatSessionRepository.CreateAsync(session, ct);
+        }
+
+        return session;
+    }
+
+    private async Task SaveMessageAsync(string sessionId, string role, string content, CancellationToken ct)
+    {
+        var session = await _chatSessionRepository.GetByTokenAsync(sessionId, ct);
+        if (session != null)
+        {
+            var message = new DomainChatMessage
+            {
+                SessionId = session.Id,
+                Role = role == "assistant" ? DomainChatRole.Assistant : DomainChatRole.User,
+                Content = content
+            };
+            await _chatSessionRepository.AddMessageAsync(message, ct);
         }
     }
 

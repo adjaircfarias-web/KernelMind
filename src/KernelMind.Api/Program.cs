@@ -1,5 +1,6 @@
 using KernelMind.Core;
 using KernelMind.Core.Plugins;
+using KernelMind.Core.Services;
 using KernelMind.Domain.Interfaces;
 using KernelMind.Infrastructure;
 using KernelMind.Infrastructure.Data;
@@ -50,9 +51,10 @@ if (seedOption)
     using var scope = app.Services.CreateScope();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var embeddingService = scope.ServiceProvider.GetRequiredService<EmbeddingService>();
     
-    logger.LogInformation("Running database seed...");
-    await SeedData.SeedAsync(context, logger);
+    logger.LogInformation("Running database seed with embeddings...");
+    await SeedData.SeedAsync(context, embeddingService, logger);
     logger.LogInformation("Seed completed!");
     
     return;

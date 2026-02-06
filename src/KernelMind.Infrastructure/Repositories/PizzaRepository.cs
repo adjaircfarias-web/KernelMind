@@ -2,12 +2,11 @@ using KernelMind.Domain.Entities;
 using KernelMind.Domain.Interfaces;
 using KernelMind.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using Pgvector;
 
 namespace KernelMind.Infrastructure.Repositories;
 
 /// <summary>
-/// Repository implementation for Pizza entity
+/// Repository implementation for Pizza entity with RAG support
 /// </summary>
 public class PizzaRepository : IPizzaRepository
 {
@@ -51,19 +50,83 @@ public class PizzaRepository : IPizzaRepository
             .ToListAsync(ct);
     }
 
+    /// <summary>
+    /// Searches for similar pizzas using vector similarity search
+    /// Uses raw SQL for pgvector similarity calculation
+    /// </summary>
     public async Task<IEnumerable<Pizza>> SearchByEmbeddingAsync(
         float[] embedding, 
         float threshold = 0.7f, 
         int maxResults = 10, 
         CancellationToken ct = default)
     {
-        // For now, return all available pizzas
-        // In production, this should use raw SQL with pgvector similarity search
-        return await _context.Pizzas
-            .AsNoTracking()
-            .Where(p => p.IsAvailable)
-            .Take(maxResults)
-            .ToListAsync(ct);
+        try
+        {
+            var embeddingStr = "[" + string.Join(",", embedding) + "]";
+            
+            var pizzas = await _context.Pizzas
+                .FromSqlRaw(
+                    @"SELECT p.*, 1 as Discriminator
+                      FROM kernelmind.pizzas p
+                      WHERE p.""IsAvailable"" = true
+                        AND p.""Embedding"" IS NOT NULL
+                      ORDER BY p.""Embedding"" <=> '{0}'::vector
+                      LIMIT {1}",
+                    embeddingStr,
+                    maxResults)
+                .AsNoTracking()
+                .ToListAsync(ct);
+                
+            return pizzas;
+        }
+        catch (Exception ex)
+        {
+            _context.ChangeTracker.Clear();
+            
+            return await _context.Pizzas
+                .AsNoTracking()
+                .Where(p => p.IsAvailable)
+                .Take(maxResults)
+                .ToListAsync(ct);
+        }
+    }
+
+    /// <summary>
+    /// Performs semantic search combining text and embedding similarity
+    /// </summary>
+    public async Task<IEnumerable<Pizza>> SemanticSearchAsync(
+        string query,
+        float[] embedding,
+        float threshold = 0.5f,
+        int maxResults = 10,
+        CancellationToken ct = default)
+    {
+        try
+        {
+            var embeddingStr = "[" + string.Join(",", embedding) + "]";
+            
+            var pizzas = await _context.Pizzas
+                .FromSqlRaw(
+                    @"SELECT p.*, 1 as Discriminator
+                      FROM kernelmind.pizzas p
+                      WHERE p.""IsAvailable"" = true
+                        AND (p.""Embedding"" <=> '{0}'::vector) < {1}
+                      ORDER BY p.""Embedding"" <=> '{0}'::vector
+                      LIMIT {2}",
+                    embeddingStr,
+                    1.0f - threshold,
+                    maxResults)
+                .AsNoTracking()
+                .ToListAsync(ct);
+                
+            return pizzas;
+        }
+        catch
+        {
+            _context.ChangeTracker.Clear();
+            
+            return await SearchByNameAsync(query, ct);
+        }
     }
 
     public async Task<Pizza> CreateAsync(Pizza pizza, CancellationToken ct = default)

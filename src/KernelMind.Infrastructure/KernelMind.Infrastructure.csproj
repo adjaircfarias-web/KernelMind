@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\KernelMind.Domain\KernelMind.Domain.csproj" />
+    <ProjectReference Include="..\KernelMind.Core\KernelMind.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -15,7 +16,7 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" />
     <PackageReference Include="Pgvector.EntityFrameworkCore" Version="0.2.1" />
     <PackageReference Include="Microsoft.Extensions.AI.Ollama" Version="9.0.1-preview.1.24570.5" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.1" />
   </ItemGroup>
 

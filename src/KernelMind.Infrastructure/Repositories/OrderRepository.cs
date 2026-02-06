@@ -49,6 +49,17 @@ public class OrderRepository : IOrderRepository
             .FirstOrDefaultAsync(o => o.Id == id, ct);
     }
 
+    public async Task<IEnumerable<Order>> GetByStatusAsync(OrderStatus status, CancellationToken ct = default)
+    {
+        return await _context.Orders
+            .AsNoTracking()
+            .Where(o => o.Status == status)
+            .Include(o => o.Items)
+            .ThenInclude(i => i.Pizza)
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync(ct);
+    }
+
     public async Task<Order> CreateAsync(Order order, CancellationToken ct = default)
     {
         _context.Orders.Add(order);
