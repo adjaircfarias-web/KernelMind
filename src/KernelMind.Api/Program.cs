@@ -1,3 +1,5 @@
+using KernelMind.Api.Filters;
+using KernelMind.Api.Middleware;
 using KernelMind.Core;
 using KernelMind.Core.Plugins;
 using KernelMind.Core.Services;
@@ -13,7 +15,10 @@ var seedOption = args.Contains("--seed", StringComparer.OrdinalIgnoreCase);
 
 builder.Services.AddOpenApi();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.AddValidationFilters();
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -42,6 +47,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandling();
+
 app.UseHttpsRedirection();
 
 app.MapControllers();
@@ -51,10 +58,9 @@ if (seedOption)
     using var scope = app.Services.CreateScope();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    var embeddingService = scope.ServiceProvider.GetRequiredService<EmbeddingService>();
     
-    logger.LogInformation("Running database seed with embeddings...");
-    await SeedData.SeedAsync(context, embeddingService, logger);
+    logger.LogInformation("Running database seed...");
+    await SeedData.SeedAsync(context, logger);
     logger.LogInformation("Seed completed!");
     
     return;
