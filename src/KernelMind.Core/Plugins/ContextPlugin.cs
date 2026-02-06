@@ -29,7 +29,7 @@ public class ContextPlugin
         
         _contexts[sessionToken][key] = value;
         
-        return $"Informação '{key}' armazenada com sucesso.";
+        return $"✅ Informação '{key}' armazenada com sucesso.";
     }
 
     /// <summary>
@@ -40,12 +40,12 @@ public class ContextPlugin
         _logger.LogInformation("Getting context for session {Session}: {Key}", sessionToken, key);
         
         if (!_contexts.TryGetValue(sessionToken, out var context))
-            return $"Nenhuma informação encontrada para a chave '{key}'.";
+            return $"ℹ️ Nenhuma informação encontrada para a chave '{key}'.";
         
         if (!context.TryGetValue(key, out var value))
-            return $"Nenhuma informação encontrada para a chave '{key}'.";
+            return $"ℹ️ Nenhuma informação encontrada para a chave '{key}'.";
         
-        return $"{key}: {value}";
+        return $"📋 **{key}:** {value}";
     }
 
     /// <summary>
@@ -57,7 +57,7 @@ public class ContextPlugin
         
         _contexts.Remove(sessionToken);
         
-        return "Contexto da conversa limpo.";
+        return $"🧹 Contexto da conversa limpo com sucesso.";
     }
 
     /// <summary>
@@ -68,9 +68,12 @@ public class ContextPlugin
         _logger.LogInformation("Getting conversation summary for session {Session}", sessionToken);
         
         if (!_contexts.TryGetValue(sessionToken, out var context) || !context.Any())
-            return "Nenhuma informação no contexto da conversa.";
+            return $"📭 Nenhuma informação no contexto da conversa.\n\nO contexto é usado para armazenar informações como:\n" +
+               $"- Nome do cliente\n" +
+               $"- Endereço de entrega\n" +
+               $"- Preferências de pizza";
         
-        var summary = string.Join("\n", context.Select(kvp => $"- {kvp.Key}: {kvp.Value}"));
-        return $"Resumo da conversa:\n{summary}";
+        var summary = string.Join("\n", context.Select(kvp => $"📝 **{kvp.Key}:** {kvp.Value}"));
+        return $"📋 **Resumo da Conversa**\n\n{summary}";
     }
 }

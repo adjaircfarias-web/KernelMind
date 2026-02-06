@@ -1,11 +1,14 @@
 using KernelMind.Core;
 using KernelMind.Core.Plugins;
 using KernelMind.Domain.Interfaces;
+using KernelMind.Infrastructure;
 using KernelMind.Infrastructure.Data;
 using KernelMind.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var seedOption = args.Contains("--seed", StringComparer.OrdinalIgnoreCase);
 
 builder.Services.AddOpenApi();
 
@@ -41,5 +44,18 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapControllers();
+
+if (seedOption)
+{
+    using var scope = app.Services.CreateScope();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    
+    logger.LogInformation("Running database seed...");
+    await SeedData.SeedAsync(context, logger);
+    logger.LogInformation("Seed completed!");
+    
+    return;
+}
 
 app.Run();

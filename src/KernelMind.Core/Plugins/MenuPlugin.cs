@@ -19,7 +19,7 @@ public class MenuPlugin
     }
 
     /// <summary>
-    /// Retrieves the complete pizza menu with all available items
+    /// Lists all available pizzas on the menu
     /// </summary>
     public async Task<string> GetMenuAsync(CancellationToken ct = default)
     {
@@ -28,16 +28,19 @@ public class MenuPlugin
         var pizzas = await _pizzaRepository.GetAvailableAsync(ct);
         
         if (!pizzas.Any())
-            return "Desculpe, não temos pizzas disponíveis no momento.";
+            return "Desculpe, não temos pizzas disponíveis no momento. 😔";
 
-        var menu = pizzas.Select(p => $"- {p.Name}: {p.Price:C} - {p.Description}");
-        return "Nosso cardápio:\n\n" + string.Join("\n", menu);
+        var menu = pizzas.Select(p => $"🍕 **{p.Name}** - {p.Price:C}\n   {p.Description}");
+        return $"🍕 **Nosso Cardápio**\n\n" + string.Join("\n\n", menu) + 
+               $"\n\n💡 **{pizzas.Count()}** pizzas disponíveis";
     }
 
     /// <summary>
-    /// Gets detailed information about a specific pizza by name
+    /// Gets detailed information about a specific pizza
     /// </summary>
-    public async Task<string> GetPizzaDetailsAsync(string pizzaName, CancellationToken ct = default)
+    public async Task<string> GetPizzaDetailsAsync(
+        string pizzaName, 
+        CancellationToken ct = default)
     {
         _logger.LogInformation("Getting details for pizza: {PizzaName}", pizzaName);
         
@@ -45,27 +48,33 @@ public class MenuPlugin
         var pizza = pizzas.FirstOrDefault();
         
         if (pizza == null)
-            return $"Não encontrei a pizza '{pizzaName}'. Use o menu para ver as pizzas disponíveis.";
+            return $"Não encontrei a pizza '{pizzaName}' 🤔. Use *list_menu* para ver todas as pizzas disponíveis.";
 
-        return $"**{pizza.Name}** - {pizza.Price:C}\n\n" +
-               $"{pizza.Description}\n\n" +
-               $"Ingredientes: {string.Join(", ", pizza.Ingredients)}\n" +
-               $"Categoria: {pizza.Category}";
+        return $"🍕 **{pizza.Name}**\n\n" +
+               $"💰 **Preço:** {pizza.Price:C}\n\n" +
+               $"📝 **Descrição:**\n{pizza.Description}\n\n" +
+               $"🧅 **Ingredientes:**\n{string.Join(", ", pizza.Ingredients)}\n\n" +
+               $"🏷️ **Categoria:** {pizza.Category}\n" +
+               $"{(pizza.IsAvailable ? "✅ Disponível" : "❌ Indisponível")}";
     }
 
     /// <summary>
     /// Searches for pizzas by ingredients or description
     /// </summary>
-    public async Task<string> SearchPizzasAsync(string query, CancellationToken ct = default)
+    public async Task<string> SearchPizzasAsync(
+        string query, 
+        CancellationToken ct = default)
     {
         _logger.LogInformation("Searching pizzas for: {Query}", query);
         
         var pizzas = await _pizzaRepository.SearchByNameAsync(query, ct);
         
         if (!pizzas.Any())
-            return $"Não encontrei pizzas relacionadas a '{query}'. Tente outra busca.";
+            return $"Não encontrei pizzas relacionadas a '{query}' 😕\n\nTente buscar por outro ingrediente ou use *list_menu* para ver todas as pizzas.";
 
-        var results = pizzas.Select(p => $"- {p.Name}: {p.Price:C}");
-        return $"Pizzas encontradas para '{query}':\n\n" + string.Join("\n", results);
+        var results = pizzas.Select(p => $"🍕 **{p.Name}** - {p.Price:C}");
+        return $"🔍 **Resultados para '{query}'** ({pizzas.Count()} encontrados)\n\n" + 
+               string.Join("\n\n", results) + 
+               "\n\n💡 Use *get_pizza_details* com o nome da pizza para mais informações.";
     }
 }

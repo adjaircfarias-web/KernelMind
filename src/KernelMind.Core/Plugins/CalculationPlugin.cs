@@ -24,10 +24,11 @@ public class CalculationPlugin
         
         var total = subtotal + DELIVERY_FEE;
         
-        return $"Resumo do pedido:\n" +
-               $"Subtotal: {subtotal:C}\n" +
-               $"Taxa de entrega: {DELIVERY_FEE:C}\n" +
-               $"**Total: {total:C}**";
+        return $"📊 **Resumo do Pedido**\n\n" +
+               $"💰 **Subtotal:** {subtotal:C}\n" +
+               $"🚚 **Taxa de entrega:** {DELIVERY_FEE:C}\n" +
+               $"━━━━━━━━━━━━━━━━\n" +
+               $"**TOTAL:** {total:C} 💵";
     }
 
     /// <summary>
@@ -37,9 +38,9 @@ public class CalculationPlugin
     {
         _logger.LogInformation("Calculating order total from items");
         
-        return $"Para calcular o total do seu pedido, preciso saber os itens.\n\n" +
-               $"Taxa de entrega: {DELIVERY_FEE:C}\n" +
-               $"Use calculate_total com o subtotal dos itens.";
+        return $"📋 Para calcular o total do seu pedido, preciso saber os itens.\n\n" +
+               $"🚚 **Taxa de entrega:** {DELIVERY_FEE:C}\n\n" +
+               $"💡 Use *calculate_total* com o subtotal dos itens.";
     }
 
     /// <summary>
@@ -49,7 +50,6 @@ public class CalculationPlugin
     {
         _logger.LogInformation("Applying discount code: {CouponCode}", couponCode);
         
-        // Simple discount logic
         var discount = couponCode.ToUpper() switch
         {
             "PIZZA10" => currentTotal * 0.10m,
@@ -58,12 +58,22 @@ public class CalculationPlugin
         };
 
         if (discount == 0)
-            return $"Código '{couponCode}' inválido ou expirado.";
+            return $"❌ Código '{couponCode}' inválido ou expirado.";
 
         var newTotal = currentTotal - discount;
-        return $"Desconto aplicado!\n" +
-               $"Código: {couponCode}\n" +
-               $"Desconto: {discount:C}\n" +
-               $"**Novo total: {newTotal:C}**";
+        return $"🎉 **Desconto Aplicado!**\n\n" +
+               $"📋 **Código:** {couponCode}\n" +
+               $"💰 **Desconto:** {discount:C}\n" +
+               $"━━━━━━━━━━━━━━━━\n" +
+               $"**Novo total:** {newTotal:C} 💵";
+    }
+
+    /// <summary>
+    /// Gets the delivery fee
+    /// </summary>
+    public string GetDeliveryFee()
+    {
+        return $"🚚 **Taxa de Entrega:** {DELIVERY_FEE:C}\n\n" +
+               $"📍 A taxa de entrega é fixa para todas as regiões.";
     }
 }
