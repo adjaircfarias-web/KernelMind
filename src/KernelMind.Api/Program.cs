@@ -27,9 +27,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IPizzaRepository, PizzaRepository>();
+builder.Services.AddScoped<IVectorPizzaRepository, VectorPizzaRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IChatSessionRepository, ChatSessionRepository>();
+
+builder.Services.AddScoped<VectorSearchService>();
+builder.Services.AddScoped<VectorizationService>();
+builder.Services.AddScoped<EmbeddingService>();
 
 builder.Services.AddScoped<MenuPlugin>();
 builder.Services.AddScoped<OrderPlugin>();
