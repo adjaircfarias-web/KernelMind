@@ -42,6 +42,11 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasForeignKey(e => e.CustomerId)
             .OnDelete(DeleteBehavior.SetNull);
         
+        builder.HasMany(e => e.Items)
+            .WithOne(i => i.Order)
+            .HasForeignKey(i => i.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
         // Indexes
         builder.HasIndex(e => e.Status);
         builder.HasIndex(e => e.CustomerId);
