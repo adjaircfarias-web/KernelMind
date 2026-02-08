@@ -20,8 +20,12 @@ public static class KernelConfig
         Action<OllamaOptions>? configureOptions = null)
     {
         services.AddOptions<OllamaOptions>()
-            .BindConfiguration(OllamaOptions.Ollama)
-            .Configure(configureOptions);
+            .BindConfiguration(OllamaOptions.Ollama);
+        
+        if (configureOptions != null)
+        {
+            services.Configure(configureOptions);
+        }
 
         services.AddLogging(builder =>
         {
