@@ -1,4 +1,5 @@
 using FluentAssertions;
+using KernelMind.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 using Moq;
 using ContextPlugin = KernelMind.Core.Plugins.ContextPlugin;
@@ -8,12 +9,14 @@ namespace KernelMind.UnitTests.Plugins;
 public class ContextPluginTests
 {
     private readonly Mock<ILogger<ContextPlugin>> _loggerMock;
+    private readonly Mock<IChatSessionRepository> _chatSessionRepositoryMock;
     private readonly ContextPlugin _contextPlugin;
 
     public ContextPluginTests()
     {
         _loggerMock = new Mock<ILogger<ContextPlugin>>();
-        _contextPlugin = new ContextPlugin(_loggerMock.Object);
+        _chatSessionRepositoryMock = new Mock<IChatSessionRepository>();
+        _contextPlugin = new ContextPlugin(_loggerMock.Object, _chatSessionRepositoryMock.Object);
     }
 
     [Fact]

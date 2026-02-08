@@ -31,7 +31,8 @@ public class ChatServiceTests
             new Mock<IOrderRepository>().Object,
             Mock.Of<ILogger<KernelMind.Core.Plugins.OrderPlugin>>());
         _calculationPluginMock = new Mock<KernelMind.Core.Plugins.CalculationPlugin>(
-            Mock.Of<ILogger<KernelMind.Core.Plugins.CalculationPlugin>>());
+            Mock.Of<ILogger<KernelMind.Core.Plugins.CalculationPlugin>>(),
+            new Mock<IPizzaRepository>().Object);
         _contextPluginMock = new Mock<KernelMind.Core.Plugins.ContextPlugin>(Mock.Of<ILogger<KernelMind.Core.Plugins.ContextPlugin>>());
         _chatSessionRepositoryMock = new Mock<IChatSessionRepository>();
 

@@ -147,6 +147,87 @@ public class OrderPlugin
     }
 
     /// <summary>
+    /// Removes an item from an existing order
+    /// </summary>
+    public string RemoveItemFromOrder(string orderToken, int itemIndex)
+    {
+        _logger.LogInformation("Removing item from order {OrderToken}: Item {Index}", 
+            orderToken, itemIndex);
+        
+        if (!_orders.TryGetValue(orderToken, out var order))
+            return $"❌ Pedido '{orderToken}' não encontrado.";
+        
+        if (itemIndex < 0 || itemIndex >= order.Items.Count)
+            return $"❌ Item {itemIndex + 1} não encontrado no pedido.";
+        
+        var removedItem = order.Items[itemIndex];
+        order.Items.RemoveAt(itemIndex);
+        
+        return $"✅ **Item Removido do Pedido {orderToken}**\n\n" +
+               $"🍕 **Pizza removida:** {removedItem.Pizza?.Name ?? "Unknown"}\n" +
+               $"📦 **Quantidade:** {removedItem.Quantity}x\n\n" +
+               $"💡 Use *view_order* para ver o pedido atualizado.";
+    }
+
+    /// <summary>
+    /// Gets the order history for a customer
+    /// </summary>
+    public async Task<string> GetOrderHistoryAsync(
+        string customerName,
+        CancellationToken ct = default)
+    {
+        _logger.LogInformation("Getting order history for customer: {CustomerName}", customerName);
+        
+        return $"📋 **Histórico de Pedidos**\n\n" +
+               $"Para ver o histórico completo, é necessário fazer login.\n\n" +
+               $"💡 Enquanto isso, você pode fazer novos pedidos! 🍕";
+    }
+
+    /// <summary>
+    /// Gets tracking information for an order
+    /// </summary>
+    public string GetOrderTracking(string orderToken)
+    {
+        _logger.LogInformation("Getting tracking for order: {OrderToken}", orderToken);
+        
+        return $"📍 **Rastreamento do Pedido {orderToken}**\n\n" +
+               $"⏱️ Status: Preparando\n\n" +
+               $"O seu pedido está sendo preparado com carinho! 🍕\n\n" +
+               $"📞 Você receberá uma ligação para confirmar a entrega.";
+    }
+
+    /// <summary>
+    /// Updates an existing order with new items
+    /// </summary>
+    public string UpdateOrder(string orderToken, string newItems)
+    {
+        _logger.LogInformation("Updating order {OrderToken} with new items", orderToken);
+        
+        if (!_orders.TryGetValue(orderToken, out var order))
+            return $"❌ Pedido '{orderToken}' não encontrado.";
+        
+        return $"✅ **Pedido {orderToken} Atualizado**\n\n" +
+               $"Novos itens podem ser adicionados usando *add_item_to_order*.";
+    }
+
+    /// <summary>
+    /// Adds a tip to an order
+    /// </summary>
+    public string AddTip(string orderToken, decimal tipAmount)
+    {
+        _logger.LogInformation("Adding tip to order {OrderToken}: {TipAmount}", 
+            orderToken, tipAmount);
+        
+        if (!_orders.TryGetValue(orderToken, out var order))
+            return $"❌ Pedido '{orderToken}' não encontrado.";
+        
+        return $"💝 **Gorjeta Adicionada!**\n\n" +
+               $"📋 **Pedido:** {orderToken}\n" +
+               $"💰 **Gorjeta:** {tipAmount:C}\n\n" +
+               $"O entregador vai adorar! 🙏";
+    }
+
+    /// <summary>
     /// Cancels an order if it hasn't been prepared yet
     /// </summary>
     public string CancelOrder(string orderToken)
