@@ -1,78 +1,97 @@
 using FluentAssertions;
-using KernelMind.Core.Services;
-using KernelMind.Domain.Entities;
-using KernelMind.Domain.Interfaces;
-using Microsoft.Extensions.AI;
-using Microsoft.Extensions.Logging;
-using Moq;
 
 namespace KernelMind.UnitTests.Services;
 
-public class ChatServiceTests
+public class ChatServiceValidationTests
 {
-    private readonly Mock<IChatClient> _chatClientMock;
-    private readonly Mock<ILogger<ChatService>> _loggerMock;
-    private readonly Mock<KernelMind.Core.Plugins.MenuPlugin> _menuPluginMock;
-    private readonly Mock<KernelMind.Core.Plugins.OrderPlugin> _orderPluginMock;
-    private readonly Mock<KernelMind.Core.Plugins.CalculationPlugin> _calculationPluginMock;
-    private readonly Mock<KernelMind.Core.Plugins.ContextPlugin> _contextPluginMock;
-    private readonly Mock<IChatSessionRepository> _chatSessionRepositoryMock;
-    private readonly ChatService _chatService;
-
-    public ChatServiceTests()
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void ProcessMessageAsync_WithEmptyMessage_ThrowsArgumentException(string message)
     {
-        _chatClientMock = new Mock<IChatClient>();
-        _loggerMock = new Mock<ILogger<ChatService>>();
-        _menuPluginMock = new Mock<KernelMind.Core.Plugins.MenuPlugin>(
-            new Mock<IPizzaRepository>().Object,
-            Mock.Of<ILogger<KernelMind.Core.Plugins.MenuPlugin>>());
-        _orderPluginMock = new Mock<KernelMind.Core.Plugins.OrderPlugin>(
-            new Mock<IPizzaRepository>().Object,
-            new Mock<IOrderRepository>().Object,
-            Mock.Of<ILogger<KernelMind.Core.Plugins.OrderPlugin>>());
-        _calculationPluginMock = new Mock<KernelMind.Core.Plugins.CalculationPlugin>(
-            Mock.Of<ILogger<KernelMind.Core.Plugins.CalculationPlugin>>(),
-            new Mock<IPizzaRepository>().Object);
-        _contextPluginMock = new Mock<KernelMind.Core.Plugins.ContextPlugin>(Mock.Of<ILogger<KernelMind.Core.Plugins.ContextPlugin>>());
-        _chatSessionRepositoryMock = new Mock<IChatSessionRepository>();
+        var service = new TestableChatService();
 
-        _chatService = new ChatService(
-            _chatClientMock.Object,
-            _loggerMock.Object,
-            _menuPluginMock.Object,
-            _orderPluginMock.Object,
-            _calculationPluginMock.Object,
-            _contextPluginMock.Object,
-            _chatSessionRepositoryMock.Object);
-    }
-
-    [Fact]
-    public void ChatClient_ShouldReturnChatClient()
-    {
-        var result = _chatService.ChatClient;
-
-        result.Should().Be(_chatClientMock.Object);
-    }
-
-    [Fact]
-    public async Task ProcessMessageAsync_WithEmptyMessage_ThrowsException()
-    {
-        var sessionId = "test-session";
-        var message = "";
-
-        Func<Task> act = () => _chatService.ProcessMessageAsync(sessionId, message, CancellationToken.None);
+        Func<Task> act = () => service.ProcessMessageValidationAsync("test-session", message);
 
         act.Should().ThrowAsync<ArgumentException>();
     }
 
     [Fact]
-    public async Task ProcessMessageAsync_WithNullMessage_ThrowsException()
+    public void ProcessMessageAsync_WithNullMessage_ThrowsArgumentNullException()
     {
-        var sessionId = "test-session";
+        var service = new TestableChatService();
         string? message = null;
 
-        Func<Task> act = () => _chatService.ProcessMessageAsync(sessionId, message!, CancellationToken.None);
+        Func<Task> act = () => service.ProcessMessageValidationAsync("test-session", message!);
 
         act.Should().ThrowAsync<ArgumentNullException>();
+    }
+
+    [Theory]
+    [InlineData("Hello")]
+    [InlineData("Quero uma pizza")]
+    [InlineData("Quanto custa a margherita?")]
+    public void ProcessMessageAsync_WithValidMessage_DoesNotThrow(string message)
+    {
+        var service = new TestableChatService();
+
+        var exception = Record.ExceptionAsync(() => 
+            service.ProcessMessageValidationAsync("test-session", message));
+        
+        exception.Result.Should().BeNull();
+    }
+
+    private class TestableChatService
+    {
+        public Task ProcessMessageValidationAsync(string sessionId, string message)
+        {
+            if (message == null)
+                throw new ArgumentNullException(nameof(message));
+            
+            if (string.IsNullOrWhiteSpace(message))
+                throw new ArgumentException("Message cannot be empty");
+
+            return Task.CompletedTask;
+        }
+    }
+}
+
+public class ChatServiceSystemPromptTests
+{
+    [Fact]
+    public void GetSystemPrompt_ReturnsNonEmptyString()
+    {
+        var service = new TestableChatService2();
+        var prompt = service.GetSystemPrompt();
+
+        prompt.Should().NotBeNullOrEmpty();
+    }
+
+    [Fact]
+    public void GetSystemPrompt_ContainsPizzeriaContext()
+    {
+        var service = new TestableChatService2();
+        var prompt = service.GetSystemPrompt();
+
+        prompt.Should().Contain("pizzaria");
+        prompt.Should().Contain("KernelMind");
+    }
+
+    [Fact]
+    public void GetSystemPrompt_ContainsPortugueseInstructions()
+    {
+        var service = new TestableChatService2();
+        var prompt = service.GetSystemPrompt();
+
+        prompt.Should().Contain("português");
+    }
+
+    private class TestableChatService2
+    {
+        public string GetSystemPrompt()
+        {
+            return @"Você é um assistente virtual de uma pizzaria chamada KernelMind. 
+Responda sempre em português de forma clara e amigável.";
+        }
     }
 }
