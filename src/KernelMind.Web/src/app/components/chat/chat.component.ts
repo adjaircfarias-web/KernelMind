@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChatService } from '../../services/chat.service';
@@ -408,6 +408,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   pizzas: Pizza[] = [];
   private messageSubscription?: Subscription;
 
+  @Output() pizzaSelected = new EventEmitter<Pizza>();
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
   @ViewChild('messageInput') private messageInput!: ElementRef;
 
@@ -443,6 +444,11 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   toggleMenu(): void {
     this.showMenu = !this.showMenu;
+  }
+
+  addToOrder(pizza: Pizza, event: Event): void {
+    event.stopPropagation();
+    this.pizzaSelected.emit(pizza);
   }
 
   sendMessage(event?: KeyboardEvent): void {
