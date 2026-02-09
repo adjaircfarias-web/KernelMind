@@ -13,6 +13,9 @@ public class PizzaConfiguration : IEntityTypeConfiguration<Pizza>
         
         builder.HasKey(e => e.Id);
         
+        builder.Property(e => e.Id)
+            .HasColumnName("id");
+        
         builder.Property(e => e.Name)
             .IsRequired()
             .HasMaxLength(100);

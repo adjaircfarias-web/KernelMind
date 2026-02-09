@@ -1,4 +1,5 @@
 using FluentAssertions;
+using KernelMind.Api;
 
 namespace KernelMind.IntegrationTests.Controllers;
 

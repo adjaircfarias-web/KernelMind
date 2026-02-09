@@ -41,7 +41,7 @@ namespace KernelMind.Infrastructure.Migrations
                 schema: "kernelmind",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     Price = table.Column<decimal>(type: "numeric(10,2)", precision: 10, scale: 2, nullable: false),
@@ -54,7 +54,7 @@ namespace KernelMind.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_pizzas", x => x.Id);
+                    table.PrimaryKey("PK_pizzas", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -161,7 +161,7 @@ namespace KernelMind.Infrastructure.Migrations
                         column: x => x.PizzaId,
                         principalSchema: "kernelmind",
                         principalTable: "pizzas",
-                        principalColumn: "Id",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.SetNull);
                 });
 

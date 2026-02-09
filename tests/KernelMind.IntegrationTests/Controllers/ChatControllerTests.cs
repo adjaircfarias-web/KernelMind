@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
+using KernelMind.Api;
 using KernelMind.Api.DTOs;
 
 namespace KernelMind.IntegrationTests.Controllers;
