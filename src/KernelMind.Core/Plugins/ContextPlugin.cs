@@ -1,11 +1,13 @@
 using KernelMind.Domain.Entities;
 using KernelMind.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
+using Microsoft.SemanticKernel;
+using System.ComponentModel;
 
 namespace KernelMind.Core.Plugins;
 
 /// <summary>
-/// Plugin for maintaining conversation context
+/// Plugin for maintaining conversation context with Semantic Kernel
 /// </summary>
 public class ContextPlugin
 {
@@ -22,83 +24,18 @@ public class ContextPlugin
     }
 
     /// <summary>
-    /// Saves a message to the conversation history
+    /// Stores information in the conversation context.
+    /// Use this to remember customer information like name, address, or preferences.
     /// </summary>
-    public async Task<string> SaveMessageAsync(
-        string sessionToken,
-        string role,
-        string content,
-        CancellationToken ct = default)
-    {
-        _logger.LogInformation("Saving message for session {Session}", sessionToken);
-        
-        try
-        {
-            var chatRole = Enum.Parse<ChatRole>(role, ignoreCase: true);
-            
-            var session = await _chatSessionRepository.GetByTokenAsync(sessionToken, ct);
-            
-            if (session == null)
-            {
-                session = new ChatSession
-                {
-                    SessionToken = sessionToken,
-                    IsActive = true
-                };
-                await _chatSessionRepository.CreateAsync(session, ct);
-            }
-            
-            var message = new ChatMessage
-            {
-                SessionId = session.Id,
-                Role = chatRole,
-                Content = content
-            };
-            
-            await _chatSessionRepository.AddMessageAsync(message, ct);
-            
-            return $"✅ Mensagem salva no histórico.";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error saving message");
-            return $"ℹ️ Mensagem processada (erro ao salvar no histórico).";
-        }
-    }
-
-    /// <summary>
-    /// Gets the conversation history for a session
-    /// </summary>
-    public async Task<string> GetHistoryAsync(
-        string sessionToken,
-        int limit = 10,
-        CancellationToken ct = default)
-    {
-        _logger.LogInformation("Getting history for session {Session}", sessionToken);
-        
-        var session = await _chatSessionRepository.GetByTokenAsync(sessionToken, ct);
-        
-        if (session == null || !session.Messages.Any())
-        {
-            return $"📭 **Histórico de Conversa**\n\n" +
-                   $"Nenhuma mensagem encontrada nesta sessão.\n\n" +
-                   $"💡 Comece a conversar para ver o histórico aqui!";
-        }
-        
-        var messages = session.Messages
-            .OrderByDescending(m => m.CreatedAt)
-            .Take(limit)
-            .Reverse()
-            .Select(m => $"**{m.Role}:** {m.Content}");
-        
-        return $"📋 **Histórico de Conversa** (últimas {limit} mensagens)\n\n" +
-               string.Join("\n\n", messages);
-    }
-
-    /// <summary>
-    /// Stores information in the conversation context
-    /// </summary>
-    public string SetContext(string sessionToken, string key, string value)
+    [KernelFunction("set_context")]
+    [Description("Stores a key-value pair in the conversation context (e.g., customer name, address)")]
+    public string SetContext(
+        [Description("The session token identifying this conversation")]
+        string sessionToken, 
+        [Description("The key/name of the information (e.g., 'customer_name', 'delivery_address')")]
+        string key, 
+        [Description("The value to store")]
+        string value)
     {
         _logger.LogInformation("Setting context for session {Session}: {Key} = {Value}", 
             sessionToken, key, value);
@@ -112,9 +49,16 @@ public class ContextPlugin
     }
 
     /// <summary>
-    /// Retrieves information from the conversation context
+    /// Retrieves information from the conversation context.
+    /// Use this to recall previously stored customer information.
     /// </summary>
-    public string GetContext(string sessionToken, string key)
+    [KernelFunction("get_context")]
+    [Description("Retrieves a value from the conversation context by key")]
+    public string GetContext(
+        [Description("The session token")]
+        string sessionToken, 
+        [Description("The key of the information to retrieve")]
+        string key)
     {
         _logger.LogInformation("Getting context for session {Session}: {Key}", sessionToken, key);
         
@@ -128,21 +72,14 @@ public class ContextPlugin
     }
 
     /// <summary>
-    /// Clears all context for a session
+    /// Gets a summary of all information stored in the conversation context.
+    /// Use this to see what information has been collected during the conversation.
     /// </summary>
-    public string ClearContext(string sessionToken)
-    {
-        _logger.LogInformation("Clearing context for session {Session}", sessionToken);
-        
-        _contexts.Remove(sessionToken);
-        
-        return $"🧹 Contexto da conversa limpo com sucesso.";
-    }
-
-    /// <summary>
-    /// Gets a summary of the current conversation context
-    /// </summary>
-    public string GetConversationSummary(string sessionToken)
+    [KernelFunction("get_conversation_summary")]
+    [Description("Gets a summary of all information stored in the conversation context")]
+    public string GetConversationSummary(
+        [Description("The session token")]
+        string sessionToken)
     {
         _logger.LogInformation("Getting conversation summary for session {Session}", sessionToken);
         
@@ -157,9 +94,16 @@ public class ContextPlugin
     }
 
     /// <summary>
-    /// Sets the delivery address for a session
+    /// Sets the delivery address for a session.
+    /// Use this when the customer provides their delivery address.
     /// </summary>
-    public string SetDeliveryAddress(string sessionToken, string address)
+    [KernelFunction("set_delivery_address")]
+    [Description("Stores the delivery address for this conversation")]
+    public string SetDeliveryAddress(
+        [Description("The session token")]
+        string sessionToken, 
+        [Description("The full delivery address")]
+        string address)
     {
         _logger.LogInformation("Setting delivery address for session {Session}", sessionToken);
         
@@ -167,28 +111,62 @@ public class ContextPlugin
     }
 
     /// <summary>
-    /// Gets the delivery address for a session
+    /// Gets the stored delivery address.
+    /// Use this to recall where to deliver the order.
     /// </summary>
-    public string GetDeliveryAddress(string sessionToken)
+    [KernelFunction("get_delivery_address")]
+    [Description("Retrieves the stored delivery address")]
+    public string GetDeliveryAddress(
+        [Description("The session token")]
+        string sessionToken)
     {
         return GetContext(sessionToken, "delivery_address");
     }
 
     /// <summary>
-    /// Gets session information
+    /// Sets the customer name for a session.
+    /// Use this when the customer tells you their name.
     /// </summary>
-    public string GetSessionInfo(string sessionToken)
+    [KernelFunction("set_customer_name")]
+    [Description("Stores the customer name for this conversation")]
+    public string SetCustomerName(
+        [Description("The session token")]
+        string sessionToken, 
+        [Description("The customer's name")]
+        string name)
     {
-        _logger.LogInformation("Getting session info for {Session}", sessionToken);
+        _logger.LogInformation("Setting customer name for session {Session}", sessionToken);
         
-        if (!_contexts.TryGetValue(sessionToken, out var context))
-            return $"📋 **Informações da Sessão**\n\n" +
-                   $"🆔 **Token:** {sessionToken}\n" +
-                   $"📭 Nenhuma informação armazenada.";
+        return SetContext(sessionToken, "customer_name", name);
+    }
+
+    /// <summary>
+    /// Gets the stored customer name.
+    /// Use this to address the customer by name.
+    /// </summary>
+    [KernelFunction("get_customer_name")]
+    [Description("Retrieves the stored customer name")]
+    public string GetCustomerName(
+        [Description("The session token")]
+        string sessionToken)
+    {
+        return GetContext(sessionToken, "customer_name");
+    }
+
+    /// <summary>
+    /// Clears all context for a session.
+    /// Use this when starting a fresh conversation.
+    /// </summary>
+    [KernelFunction("clear_context")]
+    [Description("Clears all stored information from the conversation context")]
+    public string ClearContext(
+        [Description("The session token")]
+        string sessionToken)
+    {
+        _logger.LogInformation("Clearing context for session {Session}", sessionToken);
         
-        return $"📋 **Informações da Sessão**\n\n" +
-               $"🆔 **Token:** {sessionToken}\n" +
-               $"📊 **Itens no contexto:** {context.Count}\n\n" +
-               $"💡 Use *get_conversation_summary* para ver todos os detalhes.";
+        _contexts.Remove(sessionToken);
+        
+        return $"🧹 Contexto da conversa limpo com sucesso.";
     }
 }

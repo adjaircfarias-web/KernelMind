@@ -1,11 +1,13 @@
 using KernelMind.Domain.Entities;
 using KernelMind.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
+using Microsoft.SemanticKernel;
+using System.ComponentModel;
 
 namespace KernelMind.Core.Plugins;
 
 /// <summary>
-/// Plugin for menu operations
+/// Plugin for menu operations with Semantic Kernel
 /// </summary>
 public class MenuPlugin
 {
@@ -19,8 +21,11 @@ public class MenuPlugin
     }
 
     /// <summary>
-    /// Lists all available pizzas on the menu
+    /// Lists all available pizzas on the menu.
+    /// Use this when the customer wants to see the menu or asks what pizzas are available.
     /// </summary>
+    [KernelFunction("get_menu")]
+    [Description("Lists all available pizzas on the menu with prices and descriptions")]
     public async Task<string> GetMenuAsync(CancellationToken ct = default)
     {
         _logger.LogInformation("Getting full menu");
@@ -36,9 +41,13 @@ public class MenuPlugin
     }
 
     /// <summary>
-    /// Gets detailed information about a specific pizza
+    /// Gets detailed information about a specific pizza.
+    /// Use this when the customer asks about a specific pizza by name.
     /// </summary>
+    [KernelFunction("get_pizza_details")]
+    [Description("Gets detailed information about a specific pizza including price, ingredients, and description")]
     public async Task<string> GetPizzaDetailsAsync(
+        [Description("The exact name of the pizza (e.g., 'Calabresa', 'Margherita')")]
         string pizzaName, 
         CancellationToken ct = default)
     {
@@ -48,7 +57,7 @@ public class MenuPlugin
         var pizza = pizzas.FirstOrDefault();
         
         if (pizza == null)
-            return $"Não encontrei a pizza '{pizzaName}' 🤔. Use *list_menu* para ver todas as pizzas disponíveis.";
+            return $"Não encontrei a pizza '{pizzaName}' 🤔. Use *get_menu* para ver todas as pizzas disponíveis.";
 
         return $"🍕 **{pizza.Name}**\n\n" +
                $"💰 **Preço:** {pizza.Price:C}\n\n" +
@@ -59,9 +68,13 @@ public class MenuPlugin
     }
 
     /// <summary>
-    /// Searches for pizzas by ingredients or description
+    /// Searches for pizzas by ingredients or description.
+    /// Use this when the customer is looking for pizzas with specific ingredients.
     /// </summary>
+    [KernelFunction("search_pizzas")]
+    [Description("Searches for pizzas by ingredients, description, or category")]
     public async Task<string> SearchPizzasAsync(
+        [Description("The search query (ingredient, pizza name, or category)")]
         string query, 
         CancellationToken ct = default)
     {
@@ -70,7 +83,7 @@ public class MenuPlugin
         var pizzas = await _pizzaRepository.SearchByNameAsync(query, ct);
         
         if (!pizzas.Any())
-            return $"Não encontrei pizzas relacionadas a '{query}' 😕\n\nTente buscar por outro ingrediente ou use *list_menu* para ver todas as pizzas.";
+            return $"Não encontrei pizzas relacionadas a '{query}' 😕\n\nTente buscar por outro ingrediente ou use *get_menu* para ver todas as pizzas.";
 
         var results = pizzas.Select(p => $"🍕 **{p.Name}** - {p.Price:C}");
         return $"🔍 **Resultados para '{query}'** ({pizzas.Count()} encontrados)\n\n" + 

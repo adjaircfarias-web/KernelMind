@@ -1,50 +1,33 @@
-using AIChatMessage = Microsoft.Extensions.AI.ChatMessage;
-using AIChatRole = Microsoft.Extensions.AI.ChatRole;
-using DomainChatRole = KernelMind.Domain.Entities.ChatRole;
-using DomainChatMessage = KernelMind.Domain.Entities.ChatMessage;
-using KernelMind.Core.Plugins;
-using KernelMind.Domain.Entities;
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.Ollama;
 using KernelMind.Domain.Interfaces;
-using Microsoft.Extensions.AI;
+using KernelMind.Domain.Entities;
 using Microsoft.Extensions.Logging;
 
 namespace KernelMind.Core.Services;
 
 /// <summary>
-/// Service that orchestrates chat interactions using Ollama with streaming support
+/// Service that orchestrates chat interactions using Semantic Kernel with Function Calling
 /// </summary>
-public class ChatService : IKernelService
+public class ChatService
 {
-    private readonly IChatClient _chatClient;
+    private readonly Kernel _kernel;
     private readonly ILogger<ChatService> _logger;
-    private readonly MenuPlugin _menuPlugin;
-    private readonly OrderPlugin _orderPlugin;
-    private readonly CalculationPlugin _calculationPlugin;
-    private readonly ContextPlugin _contextPlugin;
     private readonly IChatSessionRepository _chatSessionRepository;
 
     public ChatService(
-        IChatClient chatClient,
+        Kernel kernel,
         ILogger<ChatService> logger,
-        MenuPlugin menuPlugin,
-        OrderPlugin orderPlugin,
-        CalculationPlugin calculationPlugin,
-        ContextPlugin contextPlugin,
         IChatSessionRepository chatSessionRepository)
     {
-        _chatClient = chatClient;
+        _kernel = kernel;
         _logger = logger;
-        _menuPlugin = menuPlugin;
-        _orderPlugin = orderPlugin;
-        _calculationPlugin = calculationPlugin;
-        _contextPlugin = contextPlugin;
         _chatSessionRepository = chatSessionRepository;
     }
 
-    public IChatClient ChatClient => _chatClient;
-
     /// <summary>
-    /// Processes a user message and returns the assistant response
+    /// Processes a user message and returns the assistant response with function calling
     /// </summary>
     public async Task<string> ProcessMessageAsync(
         string sessionId, 
@@ -57,27 +40,43 @@ public class ChatService : IKernelService
         {
             var chatSession = await GetOrCreateSessionAsync(sessionId, ct);
             
-            var messages = new List<AIChatMessage>
+            // Build chat history from database
+            var chatHistory = new ChatHistory(GetSystemPrompt());
+            
+            foreach (var msg in chatSession.Messages.OrderBy(m => m.CreatedAt))
             {
-                new AIChatMessage(AIChatRole.System, GetSystemPrompt())
-            };
-
-            foreach (var chatMessage in chatSession.Messages)
-            {
-                var role = chatMessage.Role switch
+                var role = msg.Role switch
                 {
-                    DomainChatRole.System => AIChatRole.System,
-                    DomainChatRole.Assistant => AIChatRole.Assistant,
-                    _ => AIChatRole.User
+                    ChatRole.Assistant => AuthorRole.Assistant,
+                    ChatRole.System => AuthorRole.System,
+                    _ => AuthorRole.User
                 };
-                messages.Add(new AIChatMessage(role, chatMessage.Content));
+                chatHistory.AddMessage(role, msg.Content);
             }
 
-            messages.Add(new AIChatMessage(AIChatRole.User, message));
+            // Add current user message
+            chatHistory.AddUserMessage(message);
 
-            var response = await _chatClient.CompleteAsync(messages, cancellationToken: ct);
-            var responseText = response.Message.Text ?? "Desculpe, não consegui processar sua mensagem.";
+            // Get chat completion service with function calling enabled
+            var chatCompletionService = _kernel.GetRequiredService<IChatCompletionService>();
+            
+            // Enable function calling
+            var executionSettings = new OllamaPromptExecutionSettings
+            {
+                FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
+            };
 
+            // Get response with potential function calls
+            var response = await chatCompletionService.GetChatMessageContentAsync(
+                chatHistory,
+                executionSettings,
+                _kernel,
+                ct);
+
+            var responseText = response.Content ?? "Desculpe, não consegui processar sua mensagem.";
+
+            // Save both messages to database
+            await SaveMessageAsync(sessionId, "user", message, ct);
             await SaveMessageAsync(sessionId, "assistant", responseText, ct);
 
             _logger.LogInformation("Response generated for session {SessionId}", sessionId);
@@ -92,7 +91,8 @@ public class ChatService : IKernelService
     }
 
     /// <summary>
-    /// Streams the chat response using IAsyncEnumerable
+    /// Streams the chat response - NOTE: Function calling is disabled in streaming mode
+    /// because Ollama doesn't support it. Use ProcessMessageAsync for function calling.
     /// </summary>
     public async IAsyncEnumerable<string> StreamMessageAsync(
         string sessionId,
@@ -101,21 +101,55 @@ public class ChatService : IKernelService
     {
         _logger.LogInformation("Streaming message for session {SessionId}: {Message}", sessionId, message);
 
-        var messages = new List<AIChatMessage>
+        var chatHistory = new ChatHistory(GetSystemPromptForStreaming());
+        
+        // Load conversation history
+        var chatSession = await GetOrCreateSessionAsync(sessionId, ct);
+        foreach (var msg in chatSession.Messages.OrderBy(m => m.CreatedAt))
         {
-            new AIChatMessage(AIChatRole.System, GetSystemPrompt()),
-            new AIChatMessage(AIChatRole.User, message)
+            var role = msg.Role switch
+            {
+                ChatRole.Assistant => AuthorRole.Assistant,
+                ChatRole.System => AuthorRole.System,
+                _ => AuthorRole.User
+            };
+            chatHistory.AddMessage(role, msg.Content);
+        }
+
+        chatHistory.AddUserMessage(message);
+
+        // Save user message
+        await SaveMessageAsync(sessionId, "user", message, ct);
+
+        var chatCompletionService = _kernel.GetRequiredService<IChatCompletionService>();
+        
+        // NOTE: Function calling is DISABLED in streaming mode because Ollama doesn't support it
+        // Use the synchronous ProcessMessageAsync endpoint for function calling
+        var executionSettings = new OllamaPromptExecutionSettings
+        {
+            // FunctionChoiceBehavior is NOT set for streaming - Ollama limitation
         };
 
-        await foreach (var update in _chatClient.CompleteStreamingAsync(messages, cancellationToken: ct))
-        {
-            if (ct.IsCancellationRequested)
-                yield break;
+        var responseBuilder = new System.Text.StringBuilder();
 
-            if (!string.IsNullOrEmpty(update.Text))
+        await foreach (var chunk in chatCompletionService.GetStreamingChatMessageContentsAsync(
+            chatHistory,
+            executionSettings,
+            _kernel,
+            ct))
+        {
+            if (!string.IsNullOrEmpty(chunk.Content))
             {
-                yield return update.Text;
+                responseBuilder.Append(chunk.Content);
+                yield return chunk.Content;
             }
+        }
+
+        // Save assistant response
+        var fullResponse = responseBuilder.ToString();
+        if (!string.IsNullOrWhiteSpace(fullResponse))
+        {
+            await SaveMessageAsync(sessionId, "assistant", fullResponse, ct);
         }
     }
 
@@ -141,10 +175,10 @@ public class ChatService : IKernelService
         var session = await _chatSessionRepository.GetByTokenAsync(sessionId, ct);
         if (session != null)
         {
-            var message = new DomainChatMessage
+            var message = new ChatMessage
             {
                 SessionId = session.Id,
-                Role = role == "assistant" ? DomainChatRole.Assistant : DomainChatRole.User,
+                Role = role == "assistant" ? ChatRole.Assistant : ChatRole.User,
                 Content = content
             };
             await _chatSessionRepository.AddMessageAsync(message, ct);
@@ -155,37 +189,70 @@ public class ChatService : IKernelService
     {
         return @"Você é um assistente virtual de uma pizzaria chamada KernelMind. Seu objetivo é ajudar os clientes a fazerem pedidos de forma natural e conversacional.
 
-CAPACIDADES:
-- Consultar o cardápio completo
-- Fornecer detalhes sobre pizzas específicas (ingredientes, preços)
-- Buscar pizzas por ingredientes ou descrição
-- Criar novos pedidos
-- Adicionar itens a pedidos existentes
-- Calcular totais com taxa de entrega
-- Aplicar cupons de desconto
-- Confirmar ou cancelar pedidos
+CAPACIDADES DISPONÍVEIS (use as funções quando apropriado):
 
-INSTRUÇÕES:
-1. Seja sempre cordial e profissional
-2. Responda em português brasileiro
-3. Use emojis ocasionalmente para tornar a conversa mais amigável 
-4. Quando o cliente quiser ver o cardápio, forneça informações sobre as pizzas disponíveis
-5. Quando o cliente mencionar uma pizza específica, dê detalhes sobre ela
-6. Para criar um pedido, peça o nome do cliente e endereço de entrega
-7. Sempre confirme os detalhes antes de finalizar um pedido
-8. O tempo médio de entrega é de 30-45 minutos
-9. A taxa de entrega é de R$ 5,00
+🍕 **Cardápio:**
+- get_menu: Lista todas as pizzas disponíveis
+- get_pizza_details: Mostra detalhes de uma pizza específica
+- search_pizzas: Busca pizzas por ingredientes ou nome
 
-HORÁRIO DE FUNCIONAMENTO:
-- Todos os dias das 18:00 às 23:00
-- Fins de semana das 17:00 às 23:00
+📦 **Pedidos:**
+- create_order: Cria um novo pedido (precisa de nome e endereço)
+- add_item_to_order: Adiciona uma pizza ao pedido
+- view_order: Mostra o pedido atual
+- confirm_order: Confirma e envia o pedido para a cozinha
+- cancel_order: Cancela um pedido
+- get_order_tracking: Mostra o status do pedido
 
-FORMAS DE PAGAMENTO:
-- Dinheiro
-- Cartões de crédito e débito
-- Pix
-- Carteiras digitais (Apple Pay, Google Pay)
+💰 **Cálculos:**
+- calculate_total: Calcula o total com taxa de entrega
+- calculate_delivery_fee: Calcula taxa baseada na distância
+- apply_discount: Aplica cupom de desconto
+- check_promotion: Mostra a promoção do dia
+- split_bill: Divide a conta entre pessoas
 
-Se não souber algo ou não puder ajudar com uma solicitação específica, seja honesto e direcione o cliente para falar com um atendente humano.";
+📝 **Contexto:**
+- set_context: Armazena informações (nome, endereço, etc.)
+- get_context: Recupera informações armazenadas
+- set_customer_name: Armazena o nome do cliente
+- get_customer_name: Recupera o nome do cliente
+- set_delivery_address: Armazena o endereço de entrega
+- get_delivery_address: Recupera o endereço
+
+INSTRUÇÕES IMPORTANTES:
+1. **MEMÓRIA**: Use as funções de contexto para lembrar informações do cliente (nome, endereço). NÃO pergunte novamente o que já foi informado!
+
+2. **CONTEXTO DA CONVERSA**: Você tem acesso ao histórico completo da conversa. Use essas informações para personalizar o atendimento.
+
+3. **FUNÇÕES**: Quando o cliente quiser fazer algo (ver cardápio, criar pedido, calcular preço), CHAME A FUNÇÃO apropriada. Não apenas descreva o que faria.
+
+4. **CRIAÇÃO DE PEDIDO**: Sempre que criar um pedido, armazene o token do pedido no contexto para referência futura.
+
+5. **CONFIRMAÇÃO**: Antes de confirmar um pedido, mostre todos os itens e peça confirmação explícita.
+
+INFORMAÇÕES DO ESTABELECIMENTO:
+- Tempo médio de entrega: 30-45 minutos
+- Taxa de entrega: R$ 5,00 (padrão)
+- Horário: Todos os dias 18h-23h, Fins de semana 17h-23h
+- Pagamento: Dinheiro, cartão, Pix, carteiras digitais
+
+Seja sempre cordial, use emojis ocasionalmente, e responda em português brasileiro.";
+    }
+
+    private string GetSystemPromptForStreaming()
+    {
+        return @"Você é um assistente virtual de uma pizzaria chamada KernelMind.
+
+IMPORTANTE: No modo de streaming você NÃO pode usar funções/tools. Responda com base apenas nas informações que você já conhece ou que foram fornecidas no histórico da conversa.
+
+Para operações que exigem consulta ao cardápio, criação de pedidos, ou cálculos precisos, informe ao cliente que ele deve usar o modo de resposta completa (não streaming).
+
+INFORMAÇÕES DO ESTABELECIMENTO:
+- Tempo médio de entrega: 30-45 minutos
+- Taxa de entrega: R$ 5,00 (padrão)
+- Horário: Todos os dias 18h-23h, Fins de semana 17h-23h
+- Pagamento: Dinheiro, cartão, Pix, carteiras digitais
+
+Seja sempre cordial, use emojis ocasionalmente, e responda em português brasileiro.";
     }
 }

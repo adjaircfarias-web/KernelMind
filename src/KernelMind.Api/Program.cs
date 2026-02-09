@@ -1,6 +1,7 @@
 using KernelMind.Api.Filters;
 using KernelMind.Api.Middleware;
 using KernelMind.Core;
+using KernelMind.Core.Configuration;
 using KernelMind.Core.Plugins;
 using KernelMind.Core.Services;
 using KernelMind.Domain.Interfaces;

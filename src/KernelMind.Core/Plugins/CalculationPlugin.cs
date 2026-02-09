@@ -1,10 +1,12 @@
 using KernelMind.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
+using Microsoft.SemanticKernel;
+using System.ComponentModel;
 
 namespace KernelMind.Core.Plugins;
 
 /// <summary>
-/// Plugin for price calculations
+/// Plugin for price calculations with Semantic Kernel
 /// </summary>
 public class CalculationPlugin
 {
@@ -42,9 +44,14 @@ public class CalculationPlugin
     }
 
     /// <summary>
-    /// Calculates the total price of an order including delivery fee
+    /// Calculates the total price of an order including delivery fee.
+    /// Use this to show the customer the final price.
     /// </summary>
-    public string CalculateTotal(decimal subtotal)
+    [KernelFunction("calculate_total")]
+    [Description("Calculates the total price of an order including delivery fee")]
+    public string CalculateTotal(
+        [Description("The subtotal amount (sum of all items)")]
+        decimal subtotal)
     {
         _logger.LogInformation("Calculating total for subtotal: {Subtotal}", subtotal);
         
@@ -58,27 +65,30 @@ public class CalculationPlugin
     }
 
     /// <summary>
-    /// Calculates order total with multiple items
+    /// Calculates delivery fee based on distance or zone.
+    /// Use this when the customer asks about delivery fees for their location.
     /// </summary>
-    public string CalculateOrderTotal(string itemsJson)
-    {
-        _logger.LogInformation("Calculating order total from items");
-        
-        return $"📋 Para calcular o total do seu pedido, preciso saber os itens.\n\n" +
-               $"🚚 **Taxa de entrega:** {DELIVERY_FEE:C}\n\n" +
-               $"💡 Use *calculate_total* com o subtotal dos itens.";
-    }
-
-    /// <summary>
-    /// Calculates delivery fee based on distance/zone
-    /// </summary>
-    public string CalculateDeliveryFee(string distance)
+    [KernelFunction("calculate_delivery_fee")]
+    [Description("Calculates delivery fee based on distance or zone name")]
+    public string CalculateDeliveryFee(
+        [Description("Distance in kilometers (e.g., '5') or zone name (e.g., 'centro', 'zona norte')")]
+        string distance)
     {
         _logger.LogInformation("Calculating delivery fee for distance: {Distance}", distance);
         
+        // Check if it's a zone name
+        if (ZoneDeliveryFees.TryGetValue(distance.ToLower(), out var zoneFee))
+        {
+            return $"🚚 **Taxa de Entrega**\n\n" +
+                   $"🏷️ **Zona:** {distance}\n" +
+                   $"💰 **Taxa:** {zoneFee:C}\n\n" +
+                   $"💡 Para entregas até 3km, a taxa é {DELIVERY_FEE:C}.";
+        }
+        
+        // Try to parse as distance
         if (!decimal.TryParse(distance, out var km) || km <= 0)
         {
-            return $"❌ Distância '{distance}' inválida. Informe a distância em quilômetros.";
+            return $"❌ Distância '{distance}' inválida. Informe a distância em quilômetros ou o nome da zona.";
         }
         
         var zone = km switch
@@ -101,9 +111,14 @@ public class CalculationPlugin
     }
 
     /// <summary>
-    /// Estimates delivery time based on distance
+    /// Estimates delivery time based on distance.
+    /// Use this when the customer asks how long delivery will take.
     /// </summary>
-    public string EstimateDeliveryTime(string distance)
+    [KernelFunction("estimate_delivery_time")]
+    [Description("Estimates delivery time in minutes based on distance")]
+    public string EstimateDeliveryTime(
+        [Description("Distance in kilometers")]
+        string distance)
     {
         _logger.LogInformation("Estimating delivery time for distance: {Distance}", distance);
         
@@ -122,8 +137,11 @@ public class CalculationPlugin
     }
 
     /// <summary>
-    /// Checks today's promotion
+    /// Checks today's promotion.
+    /// Use this when the customer asks about current promotions or discounts.
     /// </summary>
+    [KernelFunction("check_promotion")]
+    [Description("Checks today's special promotion or discount")]
     public string CheckPromotion()
     {
         var today = DateTime.UtcNow.DayOfWeek;
@@ -135,9 +153,16 @@ public class CalculationPlugin
     }
 
     /// <summary>
-    /// Applies a discount coupon to an order
+    /// Applies a discount coupon to an order.
+    /// Use this when the customer has a coupon code.
     /// </summary>
-    public string ApplyDiscount(decimal currentTotal, string couponCode)
+    [KernelFunction("apply_discount")]
+    [Description("Applies a discount coupon code to calculate the new total")]
+    public string ApplyDiscount(
+        [Description("Current total amount")]
+        decimal currentTotal, 
+        [Description("Coupon code (e.g., 'PIZZA10', 'PRIMEIRA')")]
+        string couponCode)
     {
         _logger.LogInformation("Applying discount code: {CouponCode}", couponCode);
         
@@ -162,8 +187,11 @@ public class CalculationPlugin
     }
 
     /// <summary>
-    /// Gets the delivery fee
+    /// Gets the standard delivery fee.
+    /// Use this when the customer asks about delivery fees in general.
     /// </summary>
+    [KernelFunction("get_delivery_fee")]
+    [Description("Gets the standard delivery fee")]
     public string GetDeliveryFee()
     {
         return $"🚚 **Taxa de Entrega:** {DELIVERY_FEE:C}\n\n" +
@@ -172,9 +200,16 @@ public class CalculationPlugin
     }
 
     /// <summary>
-    /// Splits the bill among people
+    /// Splits the bill among multiple people.
+    /// Use this when the customer wants to know how much each person should pay.
     /// </summary>
-    public string SplitBill(decimal total, int numberOfPeople)
+    [KernelFunction("split_bill")]
+    [Description("Splits the bill amount among multiple people")]
+    public string SplitBill(
+        [Description("Total bill amount")]
+        decimal total, 
+        [Description("Number of people to split the bill")]
+        int numberOfPeople)
     {
         _logger.LogInformation("Splitting bill: {Total} among {People} people", 
             total, numberOfPeople);
@@ -193,31 +228,5 @@ public class CalculationPlugin
                $"━━━━━━━━━━━━━━━━\n" +
                $"**Cada pessoa paga:** {splitAmount:C}\n\n" +
                $"💡 Taxa de serviço já incluída!";
-    }
-
-    /// <summary>
-    /// Calculates total with delivery included
-    /// </summary>
-    public string CalculateTotalWithDelivery(string subtotal, string distance)
-    {
-        _logger.LogInformation("Calculating total with delivery for: {Subtotal}, distance: {Distance}", 
-            subtotal, distance);
-        
-        if (!decimal.TryParse(subtotal, out var sub) || sub <= 0)
-            return $"❌ Subtotal '{subtotal}' inválido.";
-        
-        var deliveryFee = CalculateDeliveryFee(distance);
-        
-        var feeMatch = System.Text.RegularExpressions.Regex.Match(
-            deliveryFee, @"Taxa: R\$ ([\d,]+)");
-        var fee = feeMatch.Success ? decimal.Parse(feeMatch.Groups[1].Value.Replace(",", ".")) : DELIVERY_FEE;
-        
-        var total = sub + fee;
-        
-        return $"📊 **Total com Entrega**\n\n" +
-               $"💰 **Subtotal:** {sub:C}\n" +
-               $"🚚 **Entrega:** {fee:C}\n" +
-               $"━━━━━━━━━━━━━━━━\n" +
-               $"**TOTAL:** {total:C} 💵";
     }
 }

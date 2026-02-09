@@ -1,11 +1,13 @@
 using KernelMind.Domain.Entities;
 using KernelMind.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
+using Microsoft.SemanticKernel;
+using System.ComponentModel;
 
 namespace KernelMind.Core.Plugins;
 
 /// <summary>
-/// Plugin for order management
+/// Plugin for order management with Semantic Kernel
 /// </summary>
 public class OrderPlugin
 {
@@ -25,11 +27,17 @@ public class OrderPlugin
     }
 
     /// <summary>
-    /// Creates a new order for a customer
+    /// Creates a new order for a customer.
+    /// Use this when the customer wants to start a new order.
     /// </summary>
+    [KernelFunction("create_order")]
+    [Description("Creates a new order for a customer and returns an order token")]
     public async Task<string> CreateOrderAsync(
+        [Description("Customer's full name")]
         string customerName,
+        [Description("Delivery address")]
         string address,
+        [Description("Customer's phone number (optional)")]
         string phone = "",
         CancellationToken ct = default)
     {
@@ -55,12 +63,19 @@ public class OrderPlugin
     }
 
     /// <summary>
-    /// Adds a pizza item to an existing order
+    /// Adds a pizza item to an existing order.
+    /// Use this when the customer wants to add a pizza to their order.
     /// </summary>
+    [KernelFunction("add_item_to_order")]
+    [Description("Adds a pizza item to an existing order")]
     public async Task<string> AddItemToOrderAsync(
+        [Description("The order token (received from create_order)")]
         string orderToken,
+        [Description("Exact name of the pizza to add")]
         string pizzaName,
+        [Description("Quantity of pizzas (default: 1)")]
         int quantity = 1,
+        [Description("Any special notes or requests (optional)")]
         string? notes = null,
         CancellationToken ct = default)
     {
@@ -74,7 +89,7 @@ public class OrderPlugin
         var pizza = pizzas.FirstOrDefault();
         
         if (pizza == null)
-            return $"❌ Pizza '{pizzaName}' não encontrada. Use *list_menu* para ver as pizzas disponíveis.";
+            return $"❌ Pizza '{pizzaName}' não encontrada. Use *get_menu* para ver as pizzas disponíveis.";
         
         var orderItem = new OrderItem
         {
@@ -91,13 +106,18 @@ public class OrderPlugin
                $"📦 **Quantidade:** {quantity}x\n" +
                $"💰 **Preço unitário:** {pizza.Price:C}\n" +
                $"📝 **Observações:** {notes ?? "Nenhuma"}\n\n" +
-               $"💡 Use *calculate_order_total* para ver o valor total.";
+               $"💡 Use *view_order* para ver o pedido completo.";
     }
 
     /// <summary>
-    /// Views the current order with all items
+    /// Views the current order with all items.
+    /// Use this to show the customer what's in their order.
     /// </summary>
-    public string ViewOrder(string orderToken)
+    [KernelFunction("view_order")]
+    [Description("Views the current order with all items and total price")]
+    public string ViewOrder(
+        [Description("The order token")]
+        string orderToken)
     {
         _logger.LogInformation("Viewing order: {OrderToken}", orderToken);
         
@@ -121,9 +141,13 @@ public class OrderPlugin
     }
 
     /// <summary>
-    /// Confirms the order and sends it to the kitchen
+    /// Confirms the order and sends it to the kitchen.
+    /// Use this when the customer is ready to finalize their order.
     /// </summary>
+    [KernelFunction("confirm_order")]
+    [Description("Confirms the order and sends it to the kitchen for preparation")]
     public async Task<string> ConfirmOrderAsync(
+        [Description("The order token to confirm")]
         string orderToken,
         CancellationToken ct = default)
     {
@@ -147,9 +171,16 @@ public class OrderPlugin
     }
 
     /// <summary>
-    /// Removes an item from an existing order
+    /// Removes an item from an existing order.
+    /// Use this when the customer wants to remove something from their order.
     /// </summary>
-    public string RemoveItemFromOrder(string orderToken, int itemIndex)
+    [KernelFunction("remove_item_from_order")]
+    [Description("Removes an item from an existing order by its index")]
+    public string RemoveItemFromOrder(
+        [Description("The order token")]
+        string orderToken, 
+        [Description("The index of the item to remove (0-based)")]
+        int itemIndex)
     {
         _logger.LogInformation("Removing item from order {OrderToken}: Item {Index}", 
             orderToken, itemIndex);
@@ -170,67 +201,14 @@ public class OrderPlugin
     }
 
     /// <summary>
-    /// Gets the order history for a customer
+    /// Cancels an order if it hasn't been prepared yet.
+    /// Use this when the customer wants to cancel their order.
     /// </summary>
-    public async Task<string> GetOrderHistoryAsync(
-        string customerName,
-        CancellationToken ct = default)
-    {
-        _logger.LogInformation("Getting order history for customer: {CustomerName}", customerName);
-        
-        return $"📋 **Histórico de Pedidos**\n\n" +
-               $"Para ver o histórico completo, é necessário fazer login.\n\n" +
-               $"💡 Enquanto isso, você pode fazer novos pedidos! 🍕";
-    }
-
-    /// <summary>
-    /// Gets tracking information for an order
-    /// </summary>
-    public string GetOrderTracking(string orderToken)
-    {
-        _logger.LogInformation("Getting tracking for order: {OrderToken}", orderToken);
-        
-        return $"📍 **Rastreamento do Pedido {orderToken}**\n\n" +
-               $"⏱️ Status: Preparando\n\n" +
-               $"O seu pedido está sendo preparado com carinho! 🍕\n\n" +
-               $"📞 Você receberá uma ligação para confirmar a entrega.";
-    }
-
-    /// <summary>
-    /// Updates an existing order with new items
-    /// </summary>
-    public string UpdateOrder(string orderToken, string newItems)
-    {
-        _logger.LogInformation("Updating order {OrderToken} with new items", orderToken);
-        
-        if (!_orders.TryGetValue(orderToken, out var order))
-            return $"❌ Pedido '{orderToken}' não encontrado.";
-        
-        return $"✅ **Pedido {orderToken} Atualizado**\n\n" +
-               $"Novos itens podem ser adicionados usando *add_item_to_order*.";
-    }
-
-    /// <summary>
-    /// Adds a tip to an order
-    /// </summary>
-    public string AddTip(string orderToken, decimal tipAmount)
-    {
-        _logger.LogInformation("Adding tip to order {OrderToken}: {TipAmount}", 
-            orderToken, tipAmount);
-        
-        if (!_orders.TryGetValue(orderToken, out var order))
-            return $"❌ Pedido '{orderToken}' não encontrado.";
-        
-        return $"💝 **Gorjeta Adicionada!**\n\n" +
-               $"📋 **Pedido:** {orderToken}\n" +
-               $"💰 **Gorjeta:** {tipAmount:C}\n\n" +
-               $"O entregador vai adorar! 🙏";
-    }
-
-    /// <summary>
-    /// Cancels an order if it hasn't been prepared yet
-    /// </summary>
-    public string CancelOrder(string orderToken)
+    [KernelFunction("cancel_order")]
+    [Description("Cancels an order if it hasn't been prepared yet")]
+    public string CancelOrder(
+        [Description("The order token to cancel")]
+        string orderToken)
     {
         _logger.LogInformation("Cancelling order: {OrderToken}", orderToken);
         
@@ -240,5 +218,41 @@ public class OrderPlugin
         return $"❌ **Pedido {orderToken} Cancelado**\n\n" +
                $"O seu pedido foi cancelado conforme solicitado.\n" +
                $"Se precisar, use *create_order* para fazer um novo pedido.";
+    }
+
+    /// <summary>
+    /// Gets tracking information for an order.
+    /// Use this when the customer asks about their order status.
+    /// </summary>
+    [KernelFunction("get_order_tracking")]
+    [Description("Gets tracking information and status for an order")]
+    public string GetOrderTracking(
+        [Description("The order token")]
+        string orderToken)
+    {
+        _logger.LogInformation("Getting tracking for order: {OrderToken}", orderToken);
+        
+        if (!_orders.TryGetValue(orderToken, out var order))
+            return $"📍 **Rastreamento do Pedido {orderToken}**\n\n" +
+                   $"⚠️ Pedido não encontrado no sistema atual.\n\n" +
+                   $"💡 Verifique se o número do pedido está correto.";
+        
+        var status = order.Status switch
+        {
+            OrderStatus.Pending => "⏳ Pendente - Aguardando confirmação",
+            OrderStatus.Confirmed => "✅ Confirmado - Enviado para a cozinha",
+            OrderStatus.Preparing => "👨‍🍳 Em preparação",
+            OrderStatus.Ready => "✨ Pronto para entrega",
+            OrderStatus.OutForDelivery => "🛵 Saiu para entrega",
+            OrderStatus.Delivered => "✅ Entregue",
+            OrderStatus.Cancelled => "❌ Cancelado",
+            _ => "⏳ Status desconhecido"
+        };
+        
+        return $"📍 **Rastreamento do Pedido {orderToken}**\n\n" +
+               $"{status}\n\n" +
+               $"📍 **Endereço:** {order.DeliveryAddress}\n" +
+               $"⏱️ **Tempo estimado:** 30-45 minutos\n\n" +
+               $"📞 Você receberá uma ligação para confirmar a entrega.";
     }
 }
