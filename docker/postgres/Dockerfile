@@ -6,6 +6,9 @@ FROM pgvector/pgvector:pg16
 LABEL maintainer="KernelMind Team"
 LABEL description="PostgreSQL 16 with pgvector extension for RAG"
 
+# Copy custom pg_hba.conf
+COPY pg_hba.conf /etc/postgresql/pg_hba.conf
+
 # Copy initialization scripts
 COPY init/ /docker-entrypoint-initdb.d/
 

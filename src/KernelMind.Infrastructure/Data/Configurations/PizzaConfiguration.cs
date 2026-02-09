@@ -14,36 +14,45 @@ public class PizzaConfiguration : IEntityTypeConfiguration<Pizza>
         builder.HasKey(e => e.Id);
         
         builder.Property(e => e.Id)
-            .HasColumnName("id");
+            .HasColumnName("Id");
         
         builder.Property(e => e.Name)
             .IsRequired()
-            .HasMaxLength(100);
+            .HasMaxLength(100)
+            .HasColumnName("Name");
         
         builder.Property(e => e.Description)
-            .HasMaxLength(500);
+            .HasMaxLength(500)
+            .HasColumnName("Description");
         
         builder.Property(e => e.Price)
             .HasPrecision(10, 2)
-            .IsRequired();
+            .IsRequired()
+            .HasColumnName("Price");
         
         builder.Property(e => e.Category)
-            .HasMaxLength(50);
+            .HasMaxLength(50)
+            .HasColumnName("Category");
         
-        builder.Property(e => e.Ingredients);
+        builder.Property(e => e.Ingredients)
+            .HasColumnName("Ingredients");
         
         builder.Property(e => e.IsAvailable)
-            .HasDefaultValue(true);
+            .HasDefaultValue(true)
+            .HasColumnName("IsAvailable");
         
         builder.Property(e => e.Embedding)
             .HasColumnType("vector(768)")
-            .HasConversion(new VectorValueConverter());
+            .HasConversion(new VectorValueConverter())
+            .HasColumnName("Embedding");
         
         builder.Property(e => e.CreatedAt)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
+            .HasColumnName("CreatedAt");
         
         builder.Property(e => e.UpdatedAt)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
+            .HasColumnName("UpdatedAt");
         
         builder.HasIndex(e => e.Embedding)
             .HasMethod("ivfflat")

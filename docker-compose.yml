@@ -96,8 +96,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Production}
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=${POSTGRES_DB:-kernelmind};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres123}
-      - Ollama__Url=http://ollama:11434
-      - Ollama__Model=${OLLAMA_MODEL:-llama3.1:8b}
+       - Ollama__Host=http://ollama:11434
+       - Ollama__Model=${OLLAMA_MODEL:-llama3.1:8b}
       - Ollama__Temperature=${OLLAMA_TEMPERATURE:-0.7}
       - Ollama__MaxTokens=${OLLAMA_MAX_TOKENS:-2048}
       - Jwt__Secret=${JWT_SECRET:-your-super-secret-jwt-key-2026}
