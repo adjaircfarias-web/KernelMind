@@ -8,6 +8,7 @@ using KernelMind.Infrastructure;
 using KernelMind.Infrastructure.Data;
 using KernelMind.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace KernelMind.Api;
 
@@ -32,7 +33,13 @@ public class Program
         builder.Services.AddCors();
 
         builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+        {
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+            dataSourceBuilder.EnableDynamicJson();
+            var dataSource = dataSourceBuilder.Build();
+            options.UseNpgsql(dataSource);
+        });
 
         builder.Services.AddScoped<IPizzaRepository, PizzaRepository>();
         builder.Services.AddScoped<IVectorPizzaRepository, VectorPizzaRepository>();

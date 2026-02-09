@@ -464,19 +464,26 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.isTyping = true;
 
+    // Create assistant message placeholder for streaming chunks
+    const assistantMessage: ChatMessage = {
+      role: 'assistant',
+      content: '',
+      timestamp: new Date()
+    };
+    this.messages.push(assistantMessage);
+
     this.chatService.sendMessage(content).subscribe({
       next: (chunk) => {
-        const lastMsg = this.messages[this.messages.length - 1];
-        if (lastMsg && lastMsg.role === 'assistant') {
-          lastMsg.content += chunk;
-        }
+        assistantMessage.content += chunk;
+        this.isTyping = false;
+        this.scrollToBottom();
       },
       error: () => {
-        this.messages.push({
-          role: 'assistant',
-          content: 'Desculpe, ocorreu um erro. Tente novamente.',
-          timestamp: new Date()
-        });
+        if (!assistantMessage.content) {
+          assistantMessage.content = 'Desculpe, ocorreu um erro. Tente novamente.';
+        }
+        this.isTyping = false;
+        this.scrollToBottom();
       },
       complete: () => {
         this.isTyping = false;

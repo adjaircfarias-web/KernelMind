@@ -62,7 +62,7 @@ services:
         ollama serve &
         sleep 5
         echo 'Pulling required models...'
-        ollama pull ${OLLAMA_MODEL:-llama3.1:8b}
+        ollama pull ${OLLAMA_MODEL:-llama3.2:3b}
         ollama pull ${OLLAMA_EMBEDDING_MODEL:-nomic-embed-text}
         echo 'Models ready!'
         wait
@@ -97,7 +97,7 @@ services:
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=${POSTGRES_DB:-kernelmind};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres123}
        - Ollama__Host=http://ollama:11434
-       - Ollama__Model=${OLLAMA_MODEL:-llama3.1:8b}
+        - Ollama__Model=${OLLAMA_MODEL:-llama3.2:3b}
       - Ollama__Temperature=${OLLAMA_TEMPERATURE:-0.7}
       - Ollama__MaxTokens=${OLLAMA_MAX_TOKENS:-2048}
       - Jwt__Secret=${JWT_SECRET:-your-super-secret-jwt-key-2026}
@@ -114,7 +114,7 @@ services:
     volumes:
       - backend_logs:/app/logs
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/chat/health"]
       interval: 30s
       timeout: 10s
       retries: 3

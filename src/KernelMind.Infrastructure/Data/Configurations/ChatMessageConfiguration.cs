@@ -15,20 +15,30 @@ public class ChatMessageConfiguration : IEntityTypeConfiguration<ChatMessage>
         
         builder.HasKey(e => e.Id);
         
+        builder.Property(e => e.Id)
+            .HasColumnName("Id");
+        
+        builder.Property(e => e.SessionId)
+            .HasColumnName("SessionId");
+        
         builder.Property(e => e.Role)
             .HasConversion<string>()
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(50)
+            .HasColumnName("Role");
         
         builder.Property(e => e.Content)
-            .IsRequired();
+            .IsRequired()
+            .HasColumnName("Content");
         
         builder.Property(e => e.Metadata)
             .HasColumnType("jsonb")
-            .HasDefaultValueSql("'{}'::jsonb");
+            .HasDefaultValueSql("'{}'::jsonb")
+            .HasColumnName("Metadata");
         
         builder.Property(e => e.CreatedAt)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
+            .HasColumnName("CreatedAt");
         
         // Relationships
         builder.HasOne(e => e.Session)
