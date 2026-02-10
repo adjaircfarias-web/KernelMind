@@ -35,9 +35,9 @@ public class MenuPlugin
         if (!pizzas.Any())
             return "Desculpe, não temos pizzas disponíveis no momento. 😔";
 
-        var menu = pizzas.Select(p => $"🍕 **{p.Name}** - {p.Price:C}\n   {p.Description}");
-        return $"🍕 **Nosso Cardápio**\n\n" + string.Join("\n\n", menu) + 
-               $"\n\n💡 **{pizzas.Count()}** pizzas disponíveis";
+        var menu = pizzas.Select(p => $"🍕 {p.Name} - R$ {p.Price:F2}\n   {p.Description}");
+        return "🍕 **Nosso Cardápio**\n\n" + string.Join("\n\n", menu) + 
+               $"\n\n💡 {pizzas.Count()} pizzas disponíveis";
     }
 
     /// <summary>

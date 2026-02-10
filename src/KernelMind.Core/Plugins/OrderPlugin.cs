@@ -29,6 +29,54 @@ public class OrderPlugin
     }
 
     /// <summary>
+    /// Gets the most recent active order for a customer by phone.
+    /// Use this to check if the customer already has an active order before creating a new one.
+    /// </summary>
+    [KernelFunction("get_customer_order")]
+    [Description("Gets the customer's most recent active order by phone number")]
+    public async Task<string> GetCustomerOrderAsync(
+        [Description("Customer's phone number")]
+        string phone,
+        CancellationToken ct = default)
+    {
+        _logger.LogInformation("Getting active order for phone: {Phone}", phone);
+        
+        try
+        {
+            // Find customer by phone
+            var customer = await _customerRepository.GetByPhoneAsync(phone, ct);
+            if (customer == null)
+            {
+                return "Nenhum pedido encontrado para este telefone.";
+            }
+            
+            // Get customer's most recent pending order
+            var orders = await _orderRepository.GetByCustomerAsync(customer.Id, ct);
+            var activeOrder = orders
+                .Where(o => o.Status == OrderStatus.Pending)
+                .OrderByDescending(o => o.CreatedAt)
+                .FirstOrDefault();
+            
+            if (activeOrder == null)
+            {
+                return "Nenhum pedido ativo encontrado.";
+            }
+            
+            // Extract token from notes
+            var token = activeOrder.Notes?.Split("Token: ").LastOrDefault()?.Split(" ").FirstOrDefault() ?? "N/A";
+            var items = await _orderRepository.GetOrderItemsAsync(activeOrder.Id, ct);
+            var itemList = items.Any() ? string.Join(", ", items.Select(i => $"{i.Quantity}x {i.Pizza?.Name}")) : "Nenhuma pizza adicionada";
+            
+            return $"Pedido encontrado! Token: {token} | Itens: {itemList}";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting customer order for phone: {Phone}", phone);
+            return "Erro ao buscar pedido.";
+        }
+    }
+
+    /// <summary>
     /// Creates a new order for a customer and saves it to the database.
     /// Use this when the customer wants to start a new order.
     /// </summary>

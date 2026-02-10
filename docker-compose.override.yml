@@ -23,31 +23,6 @@ services:
           memory: 256M
 
   # ============================================
-  # Ollama - Development Configuration
-  # ============================================
-  ollama:
-    ports:
-      - "11434:11434"  # Ensure local access for testing
-    # Use smaller model for faster development
-    entrypoint: >
-      sh -c "
-        ollama serve &
-        sleep 5
-        echo 'Pulling development models...'
-        ollama pull llama3.1:8b
-        ollama pull nomic-embed-text
-        echo 'Models ready!'
-        wait
-      "
-    # Lower memory for development (adjust based on your machine)
-    deploy:
-      resources:
-        limits:
-          memory: 4G
-        reservations:
-          memory: 2G
-
-  # ============================================
   # Backend - Production Configuration (Working)
   # ============================================
   backend:
@@ -65,9 +40,6 @@ volumes:
   postgres_data:
     driver: local
     name: kernelmind_postgres_data
-  ollama_data:
-    driver: local
-    name: kernelmind_ollama_data
   backend_logs:
     driver: local
     name: kernelmind_backend_logs

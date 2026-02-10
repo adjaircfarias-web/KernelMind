@@ -63,11 +63,11 @@ public static class KernelConfig
                 modelId: options.ChatModel,
                 endpoint: new Uri(options.Host));
             
-            // Add all plugins to the kernel
+            // Add all plugins to the kernel (only plugins that should be called by AI)
             builder.Plugins.AddFromObject(sp.GetRequiredService<MenuPlugin>(), "Menu");
             builder.Plugins.AddFromObject(sp.GetRequiredService<OrderPlugin>(), "Order");
             builder.Plugins.AddFromObject(sp.GetRequiredService<CalculationPlugin>(), "Calculation");
-            builder.Plugins.AddFromObject(sp.GetRequiredService<ContextPlugin>(), "Context");
+            // ContextPlugin is not added - it's for internal use only
             
             builder.Services.AddSingleton(loggerFactory);
             
