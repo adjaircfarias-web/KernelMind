@@ -15,26 +15,38 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         
         builder.HasKey(e => e.Id);
         
+        builder.Property(e => e.Id)
+            .HasColumnName("Id");
+        
+        builder.Property(e => e.CustomerId)
+            .HasColumnName("CustomerId");
+        
         builder.Property(e => e.Status)
             .HasConversion<string>()
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(50)
+            .HasColumnName("Status");
         
         builder.Property(e => e.TotalAmount)
             .HasPrecision(10, 2)
-            .HasDefaultValue(0);
+            .HasDefaultValue(0)
+            .HasColumnName("TotalAmount");
         
         builder.Property(e => e.DeliveryAddress)
-            .HasMaxLength(500);
+            .HasMaxLength(500)
+            .HasColumnName("DeliveryAddress");
         
         builder.Property(e => e.Notes)
-            .HasMaxLength(1000);
+            .HasMaxLength(1000)
+            .HasColumnName("Notes");
         
         builder.Property(e => e.CreatedAt)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
+            .HasColumnName("CreatedAt");
         
         builder.Property(e => e.UpdatedAt)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
+            .HasColumnName("UpdatedAt");
         
         // Relationships
         builder.HasOne(e => e.Customer)

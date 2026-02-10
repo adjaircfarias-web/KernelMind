@@ -9,6 +9,9 @@ public interface IOrderRepository
 {
     Task<IEnumerable<Order>> GetAllAsync(CancellationToken ct = default);
     Task<Order?> GetByIdAsync(Guid id, CancellationToken ct = default);
+    Task<Order?> GetByIdForUpdateAsync(Guid id, CancellationToken ct = default);
+    Task<IEnumerable<OrderItem>> GetOrderItemsAsync(Guid orderId, CancellationToken ct = default);
+    Task<OrderItem> AddItemToOrderAsync(Guid orderId, OrderItem item, CancellationToken ct = default);
     Task<IEnumerable<Order>> GetByCustomerAsync(Guid customerId, CancellationToken ct = default);
     Task<IEnumerable<Order>> GetByStatusAsync(OrderStatus status, CancellationToken ct = default);
     Task<Order> CreateAsync(Order order, CancellationToken ct = default);

@@ -52,11 +52,7 @@ public class Program
         builder.Services.AddScoped<VectorizationService>();
         builder.Services.AddScoped<EmbeddingService>();
 
-        builder.Services.AddScoped<MenuPlugin>();
-        builder.Services.AddScoped<OrderPlugin>();
-        builder.Services.AddScoped<CalculationPlugin>();
-        builder.Services.AddScoped<ContextPlugin>();
-
+        // Note: Plugins are registered as Singleton in AddKernelMindServices()
         builder.Services.AddKernelMindServices();
 
         var app = builder.Build();

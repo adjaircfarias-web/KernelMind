@@ -15,18 +15,31 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
         
         builder.HasKey(e => e.Id);
         
+        builder.Property(e => e.Id)
+            .HasColumnName("Id");
+        
+        builder.Property(e => e.OrderId)
+            .HasColumnName("OrderId");
+        
+        builder.Property(e => e.PizzaId)
+            .HasColumnName("PizzaId");
+        
         builder.Property(e => e.UnitPrice)
             .HasPrecision(10, 2)
-            .IsRequired();
+            .IsRequired()
+            .HasColumnName("UnitPrice");
         
         builder.Property(e => e.Quantity)
-            .IsRequired();
+            .IsRequired()
+            .HasColumnName("Quantity");
         
         builder.Property(e => e.Notes)
-            .HasMaxLength(500);
+            .HasMaxLength(500)
+            .HasColumnName("Notes");
         
         builder.Property(e => e.CreatedAt)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
+            .HasColumnName("CreatedAt");
         
         // Computed property
         builder.Ignore(e => e.Total);

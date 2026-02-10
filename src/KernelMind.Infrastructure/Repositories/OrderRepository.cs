@@ -49,6 +49,58 @@ public class OrderRepository : IOrderRepository
             .FirstOrDefaultAsync(o => o.Id == id, ct);
     }
 
+    public async Task<Order?> GetByIdForUpdateAsync(Guid id, CancellationToken ct = default)
+    {
+        // Fetch order without includes to avoid tracking conflicts during updates
+        // We'll load items separately if needed
+        return await _context.Orders
+            .AsNoTracking()
+            .FirstOrDefaultAsync(o => o.Id == id, ct);
+    }
+
+    public async Task<IEnumerable<OrderItem>> GetOrderItemsAsync(Guid orderId, CancellationToken ct = default)
+    {
+        return await _context.OrderItems
+            .AsNoTracking()
+            .Where(i => i.OrderId == orderId)
+            .ToListAsync(ct);
+    }
+
+    public async Task<OrderItem> AddItemToOrderAsync(Guid orderId, OrderItem item, CancellationToken ct = default)
+    {
+        // Set the OrderId
+        item = item with { OrderId = orderId };
+        
+        // Add item directly to database
+        _context.OrderItems.Add(item);
+        await _context.SaveChangesAsync(ct);
+        
+        // Update order total
+        var order = await _context.Orders.FindAsync(new object[] { orderId }, ct);
+        if (order != null)
+        {
+            var currentItems = await _context.OrderItems
+                .Where(i => i.OrderId == orderId)
+                .ToListAsync(ct);
+            
+            var total = currentItems.Sum(i => i.Quantity * i.UnitPrice);
+            order = order with { TotalAmount = total };
+            
+            // Detach existing tracked order
+            var existingEntry = _context.ChangeTracker.Entries<Order>()
+                .FirstOrDefault(e => e.Entity.Id == orderId);
+            if (existingEntry != null)
+            {
+                existingEntry.State = EntityState.Detached;
+            }
+            
+            _context.Orders.Update(order);
+            await _context.SaveChangesAsync(ct);
+        }
+        
+        return item;
+    }
+
     public async Task<IEnumerable<Order>> GetByStatusAsync(OrderStatus status, CancellationToken ct = default)
     {
         return await _context.Orders
@@ -69,6 +121,25 @@ public class OrderRepository : IOrderRepository
 
     public async Task UpdateAsync(Order order, CancellationToken ct = default)
     {
+        // For records with init-only properties, we need to detach any existing tracked entity first
+        var existingEntry = _context.ChangeTracker.Entries<Order>()
+            .FirstOrDefault(e => e.Entity.Id == order.Id);
+        
+        if (existingEntry != null)
+        {
+            existingEntry.State = EntityState.Detached;
+        }
+        
+        // Also detach any tracked order items for this order
+        var existingItems = _context.ChangeTracker.Entries<OrderItem>()
+            .Where(e => e.Entity.OrderId == order.Id)
+            .ToList();
+        
+        foreach (var item in existingItems)
+        {
+            item.State = EntityState.Detached;
+        }
+        
         _context.Orders.Update(order);
         await _context.SaveChangesAsync(ct);
     }

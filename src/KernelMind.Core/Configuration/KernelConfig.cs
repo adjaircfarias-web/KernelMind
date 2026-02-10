@@ -44,6 +44,13 @@ public static class KernelConfig
         // Configure Semantic Kernel with Ollama
         services.AddKernel();
         
+        // Configure HttpClient with timeout for Ollama
+        services.AddHttpClient("Ollama")
+            .ConfigureHttpClient(client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(120); // 2 minute timeout
+            });
+        
         services.AddSingleton<Kernel>(sp =>
         {
             var options = sp.GetRequiredService<IOptions<OllamaOptions>>().Value;
