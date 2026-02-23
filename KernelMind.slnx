@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="src/KernelMind.Domain/KernelMind.Domain.csproj" />
+  <Project Path="src/KernelMind.Core/KernelMind.Core.csproj" />
+  <Project Path="src/KernelMind.Infrastructure/KernelMind.Infrastructure.csproj" />
+  <Project Path="src/KernelMind.Api/KernelMind.Api.csproj" />
+  <Project Path="tests/KernelMind.IntegrationTests/KernelMind.IntegrationTests.csproj" />
+  <Project Path="tests/KernelMind.UnitTests/KernelMind.UnitTests.csproj" />
+</Solution>
