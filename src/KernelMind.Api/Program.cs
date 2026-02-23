@@ -31,7 +31,34 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
-        builder.Services.AddCors();
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("DevCors", policy =>
+            {
+                policy
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
+
+            options.AddPolicy("AppCors", policy =>
+            {
+                var allowedOrigins = builder.Configuration
+                    .GetSection("Cors:AllowedOrigins")
+                    .Get<string[]>() 
+                    ?? new[]
+                    {
+                        "http://localhost:4200",
+                        "http://localhost",
+                        "http://127.0.0.1"
+                    };
+
+                policy
+                    .WithOrigins(allowedOrigins)
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
+        });
 
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
@@ -57,10 +84,14 @@ public class Program
 
         var app = builder.Build();
 
-        app.UseCors(policy => policy
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader());
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseCors("DevCors");
+        }
+        else
+        {
+            app.UseCors("AppCors");
+        }
 
         app.MapOpenApi();
         app.UseSwagger();

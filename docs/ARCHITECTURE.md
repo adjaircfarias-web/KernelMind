@@ -11,6 +11,24 @@ KernelMind é uma aplicação completa de chatbot para pedidos de pizza com IA, 
 - **PostgreSQL + pgvector** para busca semântica
 - **Docker Compose** para orquestração
 
+### Fluxo em alto nível
+
+```mermaid
+flowchart LR
+  userBrowser[UserBrowser] --> angularApp[AngularApp]
+  angularApp --> apiGateway[KernelMind.Api]
+  apiGateway --> chatService[ChatService]
+  chatService --> domainServices[DomainServices]
+  domainServices --> db[(PostgreSQL+pgvector)]
+  chatService --> ragPipeline[RAGPipeline]
+  ragPipeline --> embeddings[EmbeddingService]
+  ragPipeline --> vectorSearch[VectorSearchService]
+  ragPipeline --> llm[Ollama/SemanticKernel]
+  llm --> chatService
+  chatService --> apiGateway
+  apiGateway --> angularApp
+```
+
 ---
 
 ## 🏗️ Arquitetura de Camadas
@@ -209,6 +227,8 @@ public float CalculateSimilarity(float[] v1, float[] v2)
 ## 🌐 API Endpoints
 
 ### Chat
+O serviço de chat limita o histórico às **últimas 10 mensagens** (modo normal e streaming) para manter performance e contexto estável. Ver [docs/API.md](API.md) para contratos e streaming.
+
 | Method | Endpoint | Description |
 |--------|-----------|-------------|
 | POST | /api/chat/message | Enviar mensagem |

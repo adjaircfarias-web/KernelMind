@@ -13,66 +13,60 @@ Aplicação completa demonstrando:
 
 ---
 
-## 🚀 Início Rápido
+## 🚀 Como rodar
 
 ### Pré-requisitos
-- Docker Desktop
-- 16GB RAM mínimo (32GB recomendado)
+- Docker Desktop (para cenários Docker)
+- 16GB RAM mínimo (32GB recomendado para Ollama)
 - 20GB espaço em disco
 
-### Executando
+### Cenários de execução
+
+| Cenário | Quando usar | Comandos principais |
+|--------|-------------|---------------------|
+| **Desenvolvimento local** | Editar código com hot reload (API + Angular em terminais separados) | Backend: `cd src/KernelMind.Api && dotnet run` — Frontend: `cd src/KernelMind.Web && npm install && npm start` |
+| **Desenvolvimento com Docker** | Rodar stack completa sem instalar .NET/Node localmente | `docker-compose up -d` (use `docker/` para Postgres + Ollama; API e front podem ser locais) |
+| **Produção** | Deploy em servidor | Ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) (Docker, Nginx, limites de recursos) e [docs/SECURITY.md](docs/SECURITY.md) |
+
+**Desenvolvimento local (recomendado para codar):**
 
 ```bash
-# Clonar e entrar no diretório
-cd KernelMind
+# Terminal 1 – Backend
+cd src/KernelMind.Api
+dotnet restore && dotnet run
 
-# Iniciar todos os serviços (primeira vez baixa ~10GB)
-docker-compose up -d
-
-# Acessar a aplicação
-# Frontend: http://localhost:4200
-# API: http://localhost:5076
-# Swagger: http://localhost:5076/swagger
+# Terminal 2 – Frontend
+cd src/KernelMind.Web
+npm install && npm start
 ```
 
-### Desenvolvimento Local
+Requer PostgreSQL e Ollama rodando (local ou via Docker). Frontend: http://localhost:4200 | API: http://localhost:5076 | Swagger: http://localhost:5076/swagger
+
+**Tudo com Docker:**
 
 ```bash
-# Backend (.NET)
-cd src/KernelMind.Api
-dotnet restore
-dotnet run
-
-# Frontend (Angular)
-cd src/KernelMind.Web
-npm install
-npm start
+cd KernelMind
+docker-compose up -d
+# Frontend: http://localhost:4200  |  API: http://localhost:5076
 ```
 
 ---
 
 ## 📁 Estrutura do Projeto
 
-```
-KernelMind/
-├── src/
-│   ├── KernelMind.Api/          # .NET 10 Web API
-│   ├── KernelMind.Core/         # Plugins & Services
-│   ├── KernelMind.Domain/       # Entidades & Interfaces
-│   ├── KernelMind.Infrastructure/# Repositories & Data
-│   └── KernelMind.Web/          # Angular 19 Frontend
-├── docker/
-│   ├── postgres/               # PostgreSQL + pgvector
-│   ├── ollama/                  # Servidor LLM
-│   └── nginx/                   # Configuração Nginx
-├── tests/
-│   ├── KernelMind.UnitTests/    # Testes unitários
-│   └── KernelMind.IntegrationTests/ # Testes de integração
-├── docs/                        # Documentação
-├── docker-compose.yml           # Produção
-├── docker-compose.override.yml   # Desenvolvimento
-└── README.md
-```
+| Pasta | Descrição |
+|-------|-----------|
+| [src/KernelMind.Api](src/KernelMind.Api) | .NET 10 Web API (Controllers, Filters) |
+| [src/KernelMind.Core](src/KernelMind.Core) | Plugins, Services, Prompts (Semantic Kernel, Chat, RAG) |
+| [src/KernelMind.Domain](src/KernelMind.Domain) | Entidades e interfaces de domínio |
+| [src/KernelMind.Infrastructure](src/KernelMind.Infrastructure) | EF Core, repositórios, migrações |
+| [src/KernelMind.Web](src/KernelMind.Web) | Frontend Angular 19 |
+| [tests](tests) | Testes unitários e de integração |
+| [docs](docs) | Documentação (arquitetura, API, testes, segurança) |
+| [docker](docker) | Configurações PostgreSQL, Ollama, Nginx |
+| [Plan](Plan) | Planos e user stories |
+
+Detalhes da arquitetura: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ---
 
@@ -160,10 +154,12 @@ POST /api/menu/reindex
 
 ## 📋 Documentação
 
-- [Arquitetura](docs/ARCHITECTURE.md)
-- [User Stories](Plan/USER-STORIES.md)
-- [API Swagger](http://localhost:5076/swagger)
-- [Docker](docs/US-035-COMPLETED.md)
+- **Arquitetura (fonte da verdade):** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- **Referência da API:** [docs/API.md](docs/API.md) — Swagger: http://localhost:5076/swagger
+- **Testes:** [docs/TESTING.md](docs/TESTING.md)
+- **Contribuição:** [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)
+- **Segurança e operação:** [docs/SECURITY.md](docs/SECURITY.md)
+- [User Stories](Plan/USER-STORIES.md) | [Docker](docs/US-035-COMPLETED.md)
 
 ---
 

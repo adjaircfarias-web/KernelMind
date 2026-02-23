@@ -1,40 +1,45 @@
 # Documentation
 
-## Purpose
 Technical and business documentation for the KernelMind project.
 
-## Available Documentation
+---
 
-### Plan/
-Located in `../Plan/`:
-- `PLANO-IMPLEMENTACAO.md` - Detailed technical plan
-- `ARQUITETURA-COMPLETA.md` - System architecture
-- `USER-STORIES.md` - User stories (39 US)
+## Comece por aqui
 
-### Docs/ (This directory)
-Additional documentation:
-- `API.md` - REST API documentation
-- `DEPLOYMENT.md` - Deployment guide
-- `CONTRIBUTING.md` - Contribution guide
-- `CHANGELOG.md` - Change history
+| Objetivo | Documento |
+|----------|-----------|
+| Entender a arquitetura e o fluxo do sistema | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| Consultar endpoints e contratos da API | [API.md](API.md) |
+| Rodar o projeto (dev, Docker, produção) | [README principal](../README.md#-como-rodar) |
+| Rodar testes | [TESTING.md](TESTING.md) |
+| Contribuir (branches, PRs, padrões) | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| Deploy e segurança (CORS, TLS, segredos) | [SECURITY.md](SECURITY.md) |
 
-## Documentation Standards
+---
 
-### Code
-- Comments can be in Portuguese
-- XML Documentation in English
-- READMEs in English
+## Documentação em docs/
 
-### Commits
-```
-feat: add menu plugin
-fix: resolve order calculation bug
-docs: update API documentation
-refactor: improve chat service performance
-```
+| Arquivo | Descrição |
+|---------|-----------|
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Arquitetura de camadas, diagramas, Semantic Kernel, RAG, endpoints, schema do banco, Docker, performance, testes |
+| [API.md](API.md) | Referência da API REST (Chat, Menu, Orders, Customers, Health); exemplos de request/response e streaming SSE |
+| [TESTING.md](TESTING.md) | Onde estão os testes, como rodar (unit + integration), ferramentas e metas de cobertura |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Convenções de commit/branch, requisitos de PR, padrões de código (backend, API, frontend, prompts) |
+| [SECURITY.md](SECURITY.md) | CORS, TLS, segredos, banco, limites de recursos e logs em produção |
 
-## Useful Links
-- [Semantic Kernel Docs](https://learn.microsoft.com/en-us/semantic-kernel/)
-- [Angular 19 Docs](https://angular.io/docs)
-- [PostgreSQL pgvector](https://github.com/pgvector/pgvector)
-- [Ollama](https://ollama.ai)
+### Plan/ (na raiz do repo)
+
+- [PLANO-IMPLEMENTACAO.md](../Plan/PLANO-IMPLEMENTACAO.md) – Plano técnico e fases (parte histórica; estado atual reflete Angular + API web)
+- [ARQUITETURA-COMPLETA.md](../Plan/ARQUITETURA-COMPLETA.md) – Visão expandida da arquitetura
+- [USER-STORIES.md](../Plan/USER-STORIES.md) – User stories (39 US)
+
+---
+
+## Padrões
+
+- **Código:** Comentários podem ser em português; XML Documentation em inglês.
+- **Commits:** `feat:`, `fix:`, `docs:`, `refactor:` (ex.: `feat: add menu plugin`).
+
+## Links úteis
+
+- [Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/) · [Angular 19](https://angular.io/docs) · [pgvector](https://github.com/pgvector/pgvector) · [Ollama](https://ollama.ai)
