@@ -40,14 +40,14 @@ cd src/KernelMind.Web
 npm install && npm start
 ```
 
-Requires PostgreSQL and Ollama running (locally or via Docker). Frontend: http://localhost:4200 | API: http://localhost:5076 | Swagger: http://localhost:5076/swagger
+Requires PostgreSQL and Ollama running (locally or via Docker). Frontend: http://localhost:4201 | API: http://localhost:5076 | Swagger: http://localhost:5076/swagger
 
 **Full Docker:**
 
 ```bash
 cd KernelMind
 docker-compose up -d
-# Frontend: http://localhost:4200  |  API: http://localhost:5076
+# Frontend: http://localhost:4201  |  API: http://localhost:5076
 ```
 
 ---
@@ -77,6 +77,7 @@ Architecture details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 |------------|---------|
 | .NET 10 | Framework |
 | Semantic Kernel | AI orchestration |
+| Microsoft.Extensions.AI | AI abstraction layer |
 | Entity Framework Core | ORM |
 | PostgreSQL + pgvector | Vector database |
 
@@ -91,7 +92,7 @@ Architecture details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | Technology | Purpose |
 |------------|---------|
 | Docker Compose | Orchestration |
-| Ollama | Local LLM (llama3.1) |
+| Ollama | Local LLM (llama3.2:3b) |
 | Nginx | Reverse proxy |
 
 ---
@@ -145,7 +146,7 @@ POST /api/menu/reindex
 
 | Service | Port | Description |
 |---------|------|-------------|
-| Frontend | 4200/80 | Angular dev / Nginx |
+| Frontend | 4201/80 | Angular dev / Nginx |
 | Backend | 5076 | REST API |
 | PostgreSQL | 5432 | Database |
 | Ollama | 11434 | LLM server |
@@ -185,9 +186,9 @@ dotnet test
 ### Environment Variables (.env)
 ```env
 POSTGRES_PASSWORD=postgres123
-OLLAMA_MODEL=llama3.1:8b
+OLLAMA_MODEL=llama3.2:3b
 BACKEND_PORT=5076
-FRONTEND_PORT=4200
+FRONTEND_PORT=4201
 JWT_SECRET=your-secret-key
 ```
 
