@@ -1,129 +1,123 @@
 # 🧠 KernelMind
 
-**Chatbot de Pedidos de Pizza com IA**
+**AI-Powered Pizza Order Chatbot**
 
-Aplicação completa demonstrando:
-- 🤖 **Semantic Kernel** com LLM local (Ollama)
-- 📚 **RAG (Retrieval Augmented Generation)** com embeddings
-- 🔌 **Plugins** para lógica de negócios
+Full application demonstrating:
+- 🤖 **Semantic Kernel** with local LLM (Ollama)
+- 📚 **RAG (Retrieval Augmented Generation)** with embeddings
+- 🔌 **Plugins** for business logic
 - 🌐 **Angular 19** frontend
 - ⚙️ **.NET 10** backend API
-- 🗄️ **PostgreSQL** com pgvector
-- 🐳 **Docker Compose** orquestração
+- 🗄️ **PostgreSQL** with pgvector
+- 🐳 **Docker Compose** orchestration
 
 ---
 
-## 🚀 Início Rápido
+## 🚀 How to Run
 
-### Pré-requisitos
-- Docker Desktop
-- 16GB RAM mínimo (32GB recomendado)
-- 20GB espaço em disco
+### Prerequisites
+- Docker Desktop (for Docker scenarios)
+- 16GB RAM minimum (32GB recommended for Ollama)
+- 20GB disk space
 
-### Executando
+### Execution Scenarios
 
-```bash
-# Clonar e entrar no diretório
-cd KernelMind
+| Scenario | When to use | Main commands |
+|----------|-------------|----------------|
+| **Local development** | Edit code with hot reload (API + Angular in separate terminals) | Backend: `cd src/KernelMind.Api && dotnet run` — Frontend: `cd src/KernelMind.Web && npm install && npm start` |
+| **Docker development** | Run full stack without installing .NET/Node locally | `docker-compose up -d` (use `docker/` for Postgres + Ollama; API and frontend can be local) |
+| **Production** | Deploy to server | See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) (Docker, Nginx, resource limits) and [docs/SECURITY.md](docs/SECURITY.md) |
 
-# Iniciar todos os serviços (primeira vez baixa ~10GB)
-docker-compose up -d
-
-# Acessar a aplicação
-# Frontend: http://localhost:4200
-# API: http://localhost:5076
-# Swagger: http://localhost:5076/swagger
-```
-
-### Desenvolvimento Local
+**Local development (recommended for coding):**
 
 ```bash
-# Backend (.NET)
+# Terminal 1 – Backend
 cd src/KernelMind.Api
-dotnet restore
-dotnet run
+dotnet restore && dotnet run
 
-# Frontend (Angular)
+# Terminal 2 – Frontend
 cd src/KernelMind.Web
-npm install
-npm start
+npm install && npm start
+```
+
+Requires PostgreSQL and Ollama running (locally or via Docker). Frontend: http://localhost:4200 | API: http://localhost:5076 | Swagger: http://localhost:5076/swagger
+
+**Full Docker:**
+
+```bash
+cd KernelMind
+docker-compose up -d
+# Frontend: http://localhost:4200  |  API: http://localhost:5076
 ```
 
 ---
 
-## 📁 Estrutura do Projeto
+## 📁 Project Structure
 
-```
-KernelMind/
-├── src/
-│   ├── KernelMind.Api/          # .NET 10 Web API
-│   ├── KernelMind.Core/         # Plugins & Services
-│   ├── KernelMind.Domain/       # Entidades & Interfaces
-│   ├── KernelMind.Infrastructure/# Repositories & Data
-│   └── KernelMind.Web/          # Angular 19 Frontend
-├── docker/
-│   ├── postgres/               # PostgreSQL + pgvector
-│   ├── ollama/                  # Servidor LLM
-│   └── nginx/                   # Configuração Nginx
-├── tests/
-│   ├── KernelMind.UnitTests/    # Testes unitários
-│   └── KernelMind.IntegrationTests/ # Testes de integração
-├── docs/                        # Documentação
-├── docker-compose.yml           # Produção
-├── docker-compose.override.yml   # Desenvolvimento
-└── README.md
-```
+| Folder | Description |
+|--------|-------------|
+| [src/KernelMind.Api](src/KernelMind.Api) | .NET 10 Web API (Controllers, Filters) |
+| [src/KernelMind.Core](src/KernelMind.Core) | Plugins, Services, Prompts (Semantic Kernel, Chat, RAG) |
+| [src/KernelMind.Domain](src/KernelMind.Domain) | Domain entities and interfaces |
+| [src/KernelMind.Infrastructure](src/KernelMind.Infrastructure) | EF Core, repositories, migrations |
+| [src/KernelMind.Web](src/KernelMind.Web) | Angular 19 frontend |
+| [tests](tests) | Unit and integration tests |
+| [docs](docs) | Documentation (architecture, API, testing, security) |
+| [docker](docker) | PostgreSQL, Ollama, Nginx configuration |
+| [Plan](Plan) | Plans and user stories |
+
+Architecture details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ---
 
-## 🛠️ Stack Tecnológica
+## 🛠️ Technology Stack
 
 ### Backend
-| Tecnologia | Propósito |
-|------------|-----------|
+| Technology | Purpose |
+|------------|---------|
 | .NET 10 | Framework |
-| Semantic Kernel | Orquestração IA |
+| Semantic Kernel | AI orchestration |
 | Entity Framework Core | ORM |
-| PostgreSQL + pgvector | Banco vetorial |
+| PostgreSQL + pgvector | Vector database |
 
 ### Frontend
-| Tecnologia | Propósito |
-|------------|-----------|
+| Technology | Purpose |
+|------------|---------|
 | Angular 19 | Framework |
-| RxJS | Programação reativa |
+| RxJS | Reactive programming |
 | SSE | Streaming |
 
-### Infraestrutura
-| Tecnologia | Propósito |
-|------------|-----------|
-| Docker Compose | Orquestração |
-| Ollama | LLM local (llama3.1) |
-| Nginx | Proxy reverso |
+### Infrastructure
+| Technology | Purpose |
+|------------|---------|
+| Docker Compose | Orchestration |
+| Ollama | Local LLM (llama3.1) |
+| Nginx | Reverse proxy |
 
 ---
 
-## 🤖 Plugins do Semantic Kernel
+## 🤖 Semantic Kernel Plugins
 
 ### MenuPlugin
-- `list_menu()` → Cardápio completo
-- `search_pizza()` → Busca por nome
-- `get_pizza_details()` → Detalhes
+- `list_menu()` → Full menu
+- `search_pizza()` → Search by name
+- `get_pizza_details()` → Details
 
 ### OrderPlugin
-- `create_order()` → Novo pedido
-- `add_item_to_order()` → Adicionar itens
-- `confirm_order()` → Confirmar
-- `cancel_order()` → Cancelar
+- `create_order()` → New order
+- `add_item_to_order()` → Add items
+- `confirm_order()` → Confirm
+- `cancel_order()` → Cancel
 
 ### CalculationPlugin
-- `calculate_total()` → Total com entrega
-- `calculate_delivery_fee()` → Taxa por distância
-- `apply_discount()` → Cupons
+- `calculate_total()` → Total with delivery
+- `calculate_delivery_fee()` → Distance-based fee
+- `apply_discount()` → Coupons
 
 ### ContextPlugin
-- `set_context()` → Salvar contexto
-- `get_context()` → Recuperar
-- `get_history()` → Histórico
+- `set_context()` → Save context
+- `get_context()` → Retrieve
+- `get_history()` → History
 
 ---
 
@@ -131,15 +125,15 @@ KernelMind/
 
 ### Pipeline
 ```
-1. Texto → Embedding (768 dimensões)
-2. Busca semântica (pgvector)
-3. Contexto recuperado → LLM
-4. Resposta gerada
+1. Text → Embedding (768 dimensions)
+2. Semantic search (pgvector)
+3. Retrieved context → LLM
+4. Generated response
 ```
 
-### Endpoints RAG
+### RAG Endpoints
 ```
-GET /api/menu/semantic-search?q=pizza+queijo
+GET /api/menu/semantic-search?q=pizza+cheese
 GET /api/menu/{id}/similar
 POST /api/menu/vectorize
 POST /api/menu/reindex
@@ -147,76 +141,78 @@ POST /api/menu/reindex
 
 ---
 
-## 🐳 Serviços Docker
+## 🐳 Docker Services
 
-| Serviço | Porta | Descrição |
-|---------|--------|-----------|
+| Service | Port | Description |
+|---------|------|-------------|
 | Frontend | 4200/80 | Angular dev / Nginx |
-| Backend | 5076 | API REST |
-| PostgreSQL | 5432 | Banco de dados |
-| Ollama | 11434 | Servidor LLM |
+| Backend | 5076 | REST API |
+| PostgreSQL | 5432 | Database |
+| Ollama | 11434 | LLM server |
 
 ---
 
-## 📋 Documentação
+## 📋 Documentation
 
-- [Arquitetura](docs/ARCHITECTURE.md)
-- [User Stories](Plan/USER-STORIES.md)
-- [API Swagger](http://localhost:5076/swagger)
-- [Docker](docs/US-035-COMPLETED.md)
+- **Architecture (source of truth):** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- **API reference:** [docs/API.md](docs/API.md) — Swagger: http://localhost:5076/swagger
+- **Testing:** [docs/TESTING.md](docs/TESTING.md)
+- **Contributing:** [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)
+- **Security and operations:** [docs/SECURITY.md](docs/SECURITY.md)
+- [User Stories](Plan/USER-STORIES.md) | [Docker](docs/US-035-COMPLETED.md)
 
 ---
 
-## 🧪 Testes
+## 🧪 Tests
 
 ```bash
-# Testes unitários
+# Unit tests
 dotnet test tests/KernelMind.UnitTests
 
-# Testes de integração
+# Integration tests
 dotnet test tests/KernelMind.IntegrationTests
 
-# Todos os testes
+# All tests
 dotnet test
 ```
 
-**Cobertura**: 46 testes (31 unit + 15 integration)
+**Coverage:** 46 tests (31 unit + 15 integration)
 
 ---
 
-## 🔧 Configuração
+## 🔧 Configuration
 
-### Variáveis de Ambiente (.env)
+### Environment Variables (.env)
 ```env
 POSTGRES_PASSWORD=postgres123
 OLLAMA_MODEL=llama3.1:8b
 BACKEND_PORT=5076
 FRONTEND_PORT=4200
-JWT_SECRET=sua-chave-secreta
+JWT_SECRET=your-secret-key
 ```
 
 ---
 
-## 📊 Status do Projeto
+## 📊 Project Status
 
 ```
-Fase 0 (Setup):        ✅ 5/5 (100%)
-Fase 1 (Core):         ✅ 6/6 (100%)
-Fase 2 (Semantic Kernel): ✅ 6/6 (100%)
-Fase 3 (RAG):          ✅ 5/5 (100%)
-Fase 4 (API):          ✅ 4/4 (100%)
-Fase 5 (Frontend):     ✅ 8/8 (100%)
-Fase 6 (Integração):   ✅ 5/5 (100%)
+Phase 0 (Setup):        ✅ 5/5 (100%)
+Phase 1 (Core):         ✅ 6/6 (100%)
+Phase 2 (Semantic Kernel): ✅ 6/6 (100%)
+Phase 3 (RAG):          ✅ 5/5 (100%)
+Phase 4 (API):          ✅ 4/4 (100%)
+Phase 5 (Frontend):     ✅ 8/8 (100%)
+Phase 6 (Integration):  ✅ 5/5 (100%)
 
 TOTAL: 39/39 (100%)
 ```
 
 ---
 
-## 📄 Licença
+## 📄 License
 
 MIT License
 
 ---
 
-**Feito com 🍕 e 💻**
+**Made with 🍕 and 💻**

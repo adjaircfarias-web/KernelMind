@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { ChatComponent } from './components/chat/chat.component';
 import { MenuComponent } from './components/menu/menu.component';
 import { OrderComponent } from './components/order/order.component';
 import { Pizza } from './models';
+import { OrderStateService } from './services';
 
 @Component({
   selector: 'app-root',
@@ -175,14 +176,19 @@ import { Pizza } from './models';
 })
 export class AppComponent {
   activeTab: 'chat' | 'menu' | 'order' = 'chat';
-  orderItemCount = 0;
+
+  private readonly orderState = inject(OrderStateService);
+
+  get orderItemCount(): number {
+    return this.orderState.itemCount;
+  }
 
   onPizzaSelected(pizza: Pizza): void {
-    this.orderItemCount++;
+    this.orderState.addItem(pizza);
   }
 
   onAddToCart(pizza: Pizza): void {
-    this.orderItemCount++;
+    this.orderState.addItem(pizza);
     this.activeTab = 'order';
   }
 }

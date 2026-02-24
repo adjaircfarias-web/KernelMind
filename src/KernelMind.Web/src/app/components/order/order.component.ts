@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
+import { OrderStateService } from '../../services';
 import { Order, OrderItem, OrderStatus, Pizza } from '../../models';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-order',
@@ -364,7 +366,7 @@ import { Order, OrderItem, OrderStatus, Pizza } from '../../models';
     }
   `]
 })
-export class OrderComponent implements OnInit {
+export class OrderComponent implements OnInit, OnDestroy {
   items: OrderItem[] = [];
   orderNumber = '';
   orderStatus: OrderStatus | null = null;
@@ -374,41 +376,37 @@ export class OrderComponent implements OnInit {
   notes = '';
   protected deliveryFee = 5.00;
 
-  constructor(private apiService: ApiService) {}
+  private itemsSub?: Subscription;
 
-  ngOnInit(): void {}
+  constructor(
+    private apiService: ApiService,
+    private orderState: OrderStateService
+  ) {}
+
+  ngOnInit(): void {
+    this.itemsSub = this.orderState.items$.subscribe(items => {
+      this.items = items;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.itemsSub?.unsubscribe();
+  }
 
   get subtotal(): number {
-    return this.items.reduce((sum, item) => sum + item.subtotal, 0);
+    return this.orderState.subtotal;
   }
 
   get total(): number {
     return this.subtotal + this.deliveryFee;
   }
 
-  addItem(pizza: Pizza, quantity = 1): void {
-    const existingItem = this.items.find(item => item.pizzaId === pizza.id);
-    if (existingItem) {
-      existingItem.quantity += quantity;
-      existingItem.subtotal = existingItem.quantity * existingItem.unitPrice;
-    } else {
-      this.items.push({
-        id: Date.now().toString(),
-        pizzaId: pizza.id,
-        pizzaName: pizza.name,
-        quantity,
-        unitPrice: pizza.price,
-        subtotal: pizza.price * quantity
-      });
-    }
-  }
-
   removeItem(index: number): void {
-    this.items.splice(index, 1);
+    this.orderState.removeItem(index);
   }
 
   clearOrder(): void {
-    this.items = [];
+    this.orderState.clear();
     this.orderNumber = '';
     this.orderStatus = null;
   }
@@ -433,7 +431,7 @@ export class OrderComponent implements OnInit {
       next: (createdOrder) => {
         this.orderNumber = createdOrder.id.substring(0, 8).toUpperCase();
         this.orderStatus = OrderStatus.Pending;
-        this.items = [];
+        this.orderState.clear();
         this.customerName = '';
         this.phone = '';
         this.address = '';

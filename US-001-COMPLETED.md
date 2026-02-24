@@ -1,34 +1,34 @@
-# ✅ US-001: Configurar Estrutura de Pastas do Projeto - CONCLUÍDA
+# ✅ US-001: Configure Project Folder Structure - COMPLETED
 
-**Data:** 06/02/2026  
-**Status:** ✅ COMPLETADA  
-**Tempo:** ~30 minutos
+**Date:** 2026-02-06  
+**Status:** ✅ COMPLETED  
+**Duration:** ~30 minutes
 
 ---
 
-## 📁 Estrutura Criada
+## 📁 Created Structure
 
-### src/ - Código Fonte
+### src/ - Source Code
 ```
 src/
 ├── KernelMind.Api/           # ASP.NET 10 Web API
-├── KernelMind.Core/          # Lógica de negócio e Plugins
-├── KernelMind.Domain/        # Entidades e interfaces
-├── KernelMind.Infrastructure/# Acesso a dados e infraestrutura
+├── KernelMind.Core/          # Business logic and Plugins
+├── KernelMind.Domain/        # Entities and interfaces
+├── KernelMind.Infrastructure/# Data access and infrastructure
 └── KernelMind.Web/           # Angular 19 Frontend
 ```
 
-### docker/ - Configurações Docker
+### docker/ - Docker Configuration
 ```
 docker/
 ├── postgres/                 # PostgreSQL + pgvector
 │   ├── Dockerfile
 │   └── init/
-├── ollama/                   # LLM Local
+├── ollama/                   # Local LLM
 └── nginx/                    # Reverse Proxy
 ```
 
-### scripts/ - Automação
+### scripts/ - Automation
 ```
 scripts/
 ├── docker-start.ps1
@@ -37,39 +37,39 @@ scripts/
 └── README.md
 ```
 
-### docs/ - Documentação
+### docs/ - Documentation
 ```
 docs/
 └── README.md
 ```
 
-### tests/ - Testes
+### tests/ - Tests
 ```
 tests/
-└── .gitkeep (pronto para test projects)
+└── .gitkeep (ready for test projects)
 ```
 
 ---
 
-## 📄 Arquivos Criados
+## 📄 Created Files
 
-### Documentação de Projetos
+### Project Documentation
 - `src/KernelMind.Api/README.md`
 - `src/KernelMind.Core/README.md`
 - `src/KernelMind.Domain/README.md`
 - `src/KernelMind.Infrastructure/README.md`
 - `src/KernelMind.Web/README.md`
 
-### Documentação de Suporte
+### Support Documentation
 - `docker/README.md`
 - `scripts/README.md`
 - `docs/README.md`
 - `tests/README.md`
 
-### Arquivos de Configuração
-- `.env.example` (já existia)
-- `.gitignore` (já existia)
-- `README.md` (já existia)
+### Configuration Files
+- `.env.example` (already existed)
+- `.gitignore` (already existed)
+- `README.md` (already existed)
 
 ### Git Keep
 - `docker/nginx/.gitkeep`
@@ -78,29 +78,28 @@ tests/
 
 ---
 
-## ✅ Critérios de Aceitação
+## ✅ Acceptance Criteria
 
-- [x] Criar pasta `src/` com subpastas: Api, Core, Domain, Infrastructure, Web
-- [x] Criar pasta `docker/` com subpastas: postgres, ollama, nginx
-- [x] Criar pasta `scripts/`
-- [x] Criar pasta `docs/`
-- [x] Criar pasta `tests/`
-- [x] Criar arquivos raiz: README.md, .gitignore, .env.example
-
----
-
-## 📝 Notas
-
-1. **Documentação:** Todos os projetos têm README.md explicando seu propósito e estrutura esperada
-2. **Padrões:** Seguindo convenção de código em inglês conforme definido nas User Stories
-3. **Git:** Pastas vazias têm `.gitkeep` para serem versionadas
-4. **Próximo Passo:** US-002 - Configurar Docker Compose Completo
+- [x] Create `src/` folder with subfolders: Api, Core, Domain, Infrastructure, Web
+- [x] Create `docker/` folder with subfolders: postgres, ollama, nginx
+- [x] Create `scripts/` folder
+- [x] Create `docs/` folder
+- [x] Create `tests/` folder
+- [x] Create root files: README.md, .gitignore, .env.example
 
 ---
 
-## 🚀 Próximos Passos
+## 📝 Notes
 
-1. **US-002:** Criar `docker-compose.yml` com todos os serviços
-2. **US-003:** Inicializar projetos .NET com `dotnet new`
-3. **US-004:** Inicializar projeto Angular com `ng new`
+1. **Documentation:** All projects have README.md explaining their purpose and expected structure
+2. **Standards:** Following English code convention as defined in User Stories
+3. **Git:** Empty folders have `.gitkeep` for versioning
+4. **Next Step:** US-002 - Configure Full Docker Compose
 
+---
+
+## 🚀 Next Steps
+
+1. **US-002:** Create `docker-compose.yml` with all services
+2. **US-003:** Initialize .NET projects with `dotnet new`
+3. **US-004:** Initialize Angular project with `ng new`

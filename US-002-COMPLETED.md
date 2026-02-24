@@ -1,163 +1,163 @@
-# ✅ US-002: Configurar Docker Compose Completo - CONCLUÍDA
+# ✅ US-002: Configure Full Docker Compose - COMPLETED
 
-**Data:** 06/02/2026  
-**Status:** ✅ COMPLETADA  
-**Tempo:** ~1 hora 30 minutos
+**Date:** 2026-02-06  
+**Status:** ✅ COMPLETED  
+**Duration:** ~1 hour 30 minutes
 
 ---
 
-## 📦 Arquivos Criados
+## 📦 Created Files
 
-### 1. docker-compose.yml (Principal)
-Orquestração completa com 4 serviços:
+### 1. docker-compose.yml (Main)
+Full orchestration with 4 services:
 
 ```yaml
 services:
-  - postgres     # PostgreSQL 16 + pgvector (porta 5432)
-  - ollama       # LLM Local (porta 11434)
-  - backend      # .NET 10 Web API (porta 5076)
-  - frontend     # Angular 19 (porta 4200)
+  - postgres     # PostgreSQL 16 + pgvector (port 5432)
+  - ollama       # Local LLM (port 11434)
+  - backend      # .NET 10 Web API (port 5076)
+  - frontend     # Angular 19 (port 4200)
 ```
 
 **Features:**
-- ✅ Rede compartilhada `kernelmind-network`
-- ✅ Volumes persistentes para dados
-- ✅ Healthchecks para todos os serviços
-- ✅ Limites de memória configuráveis
-- ✅ Dependências entre serviços
-- ✅ Configuração via variáveis de ambiente
+- ✅ Shared network `kernelmind-network`
+- ✅ Persistent volumes for data
+- ✅ Healthchecks for all services
+- ✅ Configurable memory limits
+- ✅ Service dependencies
+- ✅ Configuration via environment variables
 
-### 2. docker-compose.override.yml (Desenvolvimento)
-Configurações específicas para desenvolvimento:
-- Hot reload para .NET e Angular
-- Portas mapeadas para localhost
-- Volumes para código-fonte (live editing)
-- Redução de memória para máquinas de dev
+### 2. docker-compose.override.yml (Development)
+Development-specific settings:
+- Hot reload for .NET and Angular
+- Ports mapped to localhost
+- Source code volumes (live editing)
+- Reduced memory for dev machines
 
 ### 3. Dockerfiles
 
 #### docker/postgres/Dockerfile
 - Base: postgres:16-alpine
-- Instala extensão pgvector v0.8.0
-- Scripts de inicialização automática
-- Healthcheck configurado
+- Installs pgvector extension v0.8.0
+- Automatic init scripts
+- Healthcheck configured
 
 #### docker/ollama/Dockerfile
 - Base: ollama/ollama:latest
-- Baixa modelos automaticamente
-- Configurações de performance
-- Healthcheck configurado
+- Downloads models automatically
+- Performance settings
+- Healthcheck configured
 
 #### src/KernelMind.Api/Dockerfile
 - Multi-stage build (build, publish, dev, production)
-- Estágio de desenvolvimento com hot reload
-- Estágio de produção otimizado
-- Usuário não-root para segurança
+- Development stage with hot reload
+- Optimized production stage
+- Non-root user for security
 
 #### src/KernelMind.Web/Dockerfile
-- Multi-stage build com Node.js e Nginx
-- Build Angular otimizado para produção
-- Servidor Nginx com configurações de cache
-- Estágio de desenvolvimento com Angular CLI
+- Multi-stage build with Node.js and Nginx
+- Angular build optimized for production
+- Nginx server with cache settings
+- Development stage with Angular CLI
 
-### 4. Configurações de Suporte
+### 4. Support Configuration
 
 #### docker/postgres/init/01-init.sql
-- Schema `kernelmind` completo
-- Tabelas: pizzas, customers, orders, order_items, chat_sessions, chat_messages, vector_documents
-- Extensão pgvector habilitada
-- Índices de vetores para busca semântica
-- Funções: `search_pizzas()`, `search_documents()`
-- Seed data: 8 pizzas de exemplo + FAQ documents
+- Full `kernelmind` schema
+- Tables: pizzas, customers, orders, order_items, chat_sessions, chat_messages, vector_documents
+- pgvector extension enabled
+- Vector indexes for semantic search
+- Functions: `search_pizzas()`, `search_documents()`
+- Seed data: 8 sample pizzas + FAQ documents
 
 #### src/KernelMind.Web/nginx.conf
-- Configuração otimizada para Angular
+- Optimized configuration for Angular
 - Gzip compression
-- Cache de assets estáticos
-- Proxy para API backend
+- Static asset caching
+- Proxy to backend API
 - Security headers
 
-### 5. Scripts PowerShell
+### 5. PowerShell Scripts
 
 #### scripts/docker-start.ps1
 ```powershell
-# Uso: .\docker-start.ps1
-# Inicia infraestrutura (postgres + ollama)
-# Aguarda healthchecks
-# Fornece instruções de próximos passos
+# Usage: .\docker-start.ps1
+# Starts infrastructure (postgres + ollama)
+# Waits for healthchecks
+# Provides next-step instructions
 ```
 
 #### scripts/docker-stop.ps1
 ```powershell
-# Uso: .\docker-stop.ps1
-# Para todos os containers
-# Remove containers órfãos
+# Usage: .\docker-stop.ps1
+# Stops all containers
+# Removes orphan containers
 ```
 
 #### scripts/docker-logs.ps1
 ```powershell
-# Uso: .\docker-logs.ps1 [servico] [opcoes]
+# Usage: .\docker-logs.ps1 [service] [options]
 # Ex: .\docker-logs.ps1 postgres -f
 # Ex: .\docker-logs.ps1 backend -n 100
 ```
 
-### 6. .env.example (Atualizado)
-Variáveis de ambiente completas:
+### 6. .env.example (Updated)
+Complete environment variables:
 - PostgreSQL (DB, User, Password, Port)
 - Ollama (URL, Model, Port, Temperature, MaxTokens)
 - Backend (Environment, Port, JWT settings)
 - Frontend (Port, API URL)
 - Docker (Project name, Resource limits)
-- Feature flags e development settings
+- Feature flags and development settings
 
 ---
 
-## ✅ Critérios de Aceitação
+## ✅ Acceptance Criteria
 
-- [x] Criar serviço `frontend` (Angular) na porta 4200
-- [x] Criar serviço `backend` (.NET) na porta 5076
-- [x] Criar serviço `postgres` (PostgreSQL + pgvector) na porta 5432
-- [x] Criar serviço `ollama` (LLM) na porta 11434
-- [x] Configurar rede compartilhada `kernelmind-network`
-- [x] Configurar volumes persistentes para postgres e ollama
-- [x] Adicionar healthchecks para postgres
-- [x] Adicionar healthchecks para todos os serviços
-- [x] Criar docker-compose.override.yml para desenvolvimento
+- [x] Create `frontend` service (Angular) on port 4200
+- [x] Create `backend` service (.NET) on port 5076
+- [x] Create `postgres` service (PostgreSQL + pgvector) on port 5432
+- [x] Create `ollama` service (LLM) on port 11434
+- [x] Configure shared network `kernelmind-network`
+- [x] Configure persistent volumes for postgres and ollama
+- [x] Add healthchecks for postgres
+- [x] Add healthchecks for all services
+- [x] Create docker-compose.override.yml for development
 
 ---
 
-## 🚀 Como Usar
+## 🚀 How to Use
 
-### Iniciar Infraestrutura (Desenvolvimento)
+### Start Infrastructure (Development)
 ```powershell
-# Opção 1: Apenas infra (postgres + ollama)
+# Option 1: Infrastructure only (postgres + ollama)
 .\scripts\docker-start.ps1
 
-# Opção 2: Tudo com docker-compose
-# Configurar .env primeiro
+# Option 2: Everything with docker-compose
+# Configure .env first
 copy .env.example .env
 
-# Subir todos os serviços
+# Start all services
 docker-compose up -d
 
-# Ou com override para dev
+# Or with override for dev
 docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
 ```
 
-### Verificar Status
+### Check Status
 ```powershell
 docker-compose ps
 docker-compose logs -f
 ```
 
-### Parar Tudo
+### Stop Everything
 ```powershell
 .\scripts\docker-stop.ps1
-# ou
+# or
 docker-compose down
 ```
 
-### Aplicar Migrations (quando backend estiver pronto)
+### Apply Migrations (when backend is ready)
 ```bash
 cd src/KernelMind.Api
 dotnet ef database update
@@ -165,41 +165,40 @@ dotnet ef database update
 
 ---
 
-## 🗄️ Estrutura do Banco
+## 🗄️ Database Structure
 
-O PostgreSQL é inicializado com:
+PostgreSQL is initialized with:
 - **Schema:** `kernelmind`
-- **Tabelas:**
-  - `pizzas` - Cardápio com embeddings vetoriais
-  - `customers` - Clientes
-  - `orders` - Pedidos
-  - `order_items` - Itens dos pedidos
-  - `chat_sessions` - Sessões de chat
-  - `chat_messages` - Mensagens do chat
-  - `vector_documents` - Documentos para RAG
-- **Funções:**
-  - `search_pizzas()` - Busca semântica de pizzas
-  - `search_documents()` - Busca semântica de documentos
-- **Dados:** 8 pizzas + 6 documentos FAQ
+- **Tables:**
+  - `pizzas` - Menu with vector embeddings
+  - `customers` - Customers
+  - `orders` - Orders
+  - `order_items` - Order items
+  - `chat_sessions` - Chat sessions
+  - `chat_messages` - Chat messages
+  - `vector_documents` - RAG documents
+- **Functions:**
+  - `search_pizzas()` - Semantic pizza search
+  - `search_documents()` - Semantic document search
+- **Data:** 8 pizzas + 6 FAQ documents
 
 ---
 
-## 📝 Notas Importantes
+## 📝 Important Notes
 
-1. **Portas:** Todas as portas são configuráveis via `.env`
-2. **Memória:** Ollama requer significativa memória RAM/VRAM
-   - llama3.1:8b → mínimo 4GB
-   - llama3.1:70b → mínimo 48GB
-3. **Hot Reload:** Override file habilita live editing para dev
-4. **Healthchecks:** Todos os serviços têm verificação de saúde
-5. **Rede:** Container se comunicam via `kernelmind-network`
+1. **Ports:** All ports are configurable via `.env`
+2. **Memory:** Ollama requires significant RAM/VRAM
+   - llama3.1:8b → minimum 4GB
+   - llama3.1:70b → minimum 48GB
+3. **Hot Reload:** Override file enables live editing for dev
+4. **Healthchecks:** All services have health checks
+5. **Network:** Containers communicate via `kernelmind-network`
 
 ---
 
-## 🎯 Próximos Passos
+## 🎯 Next Steps
 
-1. **US-003:** Criar projetos .NET (API, Core, Domain, Infrastructure)
-2. **US-004:** Criar projeto Angular
-3. **US-005:** Configurar Entity Framework e Migrations
-4. **Testar:** `docker-compose up -d` deve funcionar completamente
-
+1. **US-003:** Create .NET projects (API, Core, Domain, Infrastructure)
+2. **US-004:** Create Angular project
+3. **US-005:** Configure Entity Framework and Migrations
+4. **Test:** `docker-compose up -d` should work fully

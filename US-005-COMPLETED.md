@@ -1,25 +1,25 @@
-# ✅ US-005: Criar Scripts de Setup e Utilitários - CONCLUÍDA
+# ✅ US-005: Create Setup Scripts and Utilities - COMPLETED
 
-**Data:** 06/02/2026  
-**Status:** ✅ COMPLETADA  
-**Tempo:** ~45 minutos
+**Date:** 2026-02-06  
+**Status:** ✅ COMPLETED  
+**Duration:** ~45 minutes
 
 ---
 
-## 📦 Scripts Criados
+## 📦 Created Scripts
 
 ### 1. scripts/setup.ps1 (Windows PowerShell)
 
-**Funcionalidades:**
-- ✅ Verifica pré-requisitos (Docker, Docker Compose, .NET SDK)
-- ✅ Cria arquivo `.env` automaticamente a partir de `.env.example`
-- ✅ Inicia containers Docker (postgres + ollama)
-- ✅ Aguarda serviços ficarem prontos (health checks)
-- ✅ Restaura pacotes NuGet
-- ✅ Compila a solução
-- ✅ Mensagens coloridas e informativas
+**Features:**
+- ✅ Checks prerequisites (Docker, Docker Compose, .NET SDK)
+- ✅ Creates `.env` file automatically from `.env.example`
+- ✅ Starts Docker containers (postgres + ollama)
+- ✅ Waits for services to be ready (health checks)
+- ✅ Restores NuGet packages
+- ✅ Builds solution
+- ✅ Colored, informative messages
 
-**Uso:**
+**Usage:**
 ```powershell
 .\scripts\setup.ps1
 ```
@@ -28,15 +28,15 @@
 
 ### 2. scripts/setup.sh (Linux/Mac/Bash)
 
-**Funcionalidades:**
-- ✅ Idêntico ao setup.ps1 para sistemas Unix
-- ✅ Compatível com bash/zsh
-- ✅ Verificação de dependências
-- ✅ Cria `.env` automaticamente
-- ✅ Aguarda serviços prontos
-- ✅ Mensagens coloridas
+**Features:**
+- ✅ Same as setup.ps1 for Unix systems
+- ✅ Compatible with bash/zsh
+- ✅ Dependency checks
+- ✅ Creates `.env` automatically
+- ✅ Waits for services to be ready
+- ✅ Colored messages
 
-**Uso:**
+**Usage:**
 ```bash
 chmod +x scripts/setup.sh
 ./scripts/setup.sh
@@ -46,58 +46,58 @@ chmod +x scripts/setup.sh
 
 ### 3. Makefile
 
-**Comandos disponíveis:**
+**Available commands:**
 
-| Comando | Descrição |
-|---------|-----------|
-| `make help` | Mostra todos os comandos disponíveis |
-| `make setup` | Executa setup inicial (Windows) |
-| `make build` | Compila a solução .NET |
-| `make run` | Inicia a API |
-| `make run-web` | Inicia o frontend Angular |
-| `make test` | Executa os testes |
-| `make up` | Inicia containers Docker |
-| `make down` | Para containers Docker |
-| `make down-v` | Para e remove volumes |
-| `make logs` | Mostra logs em tempo real |
-| `make logs-api` | Logs da API |
-| `make logs-db` | Logs do PostgreSQL |
-| `make logs-ollama` | Logs do Ollama |
-| `make db-update` | Aplica migrations |
-| `make db-add` | Cria nova migration |
-| `make seed` | Popula banco com dados |
-| `make clean` | Limpa arquivos de build |
-| `make clean-all` | Limpa tudo + Docker |
-| `make status` | Status dos containers |
-| `make dev` | Ambiente dev completo |
-| `make install-tools` | Instala ferramentas .NET |
+| Command | Description |
+|---------|-------------|
+| `make help` | Show all available commands |
+| `make setup` | Run initial setup (Windows) |
+| `make build` | Build .NET solution |
+| `make run` | Start API |
+| `make run-web` | Start Angular frontend |
+| `make test` | Run tests |
+| `make up` | Start Docker containers |
+| `make down` | Stop Docker containers |
+| `make down-v` | Stop and remove volumes |
+| `make logs` | Show logs in real time |
+| `make logs-api` | API logs |
+| `make logs-db` | PostgreSQL logs |
+| `make logs-ollama` | Ollama logs |
+| `make db-update` | Apply migrations |
+| `make db-add` | Create new migration |
+| `make seed` | Seed database with data |
+| `make clean` | Clean build files |
+| `make clean-all` | Clean everything + Docker |
+| `make status` | Container status |
+| `make dev` | Full dev environment |
+| `make install-tools` | Install .NET tools |
 | `make docker-build` | Build containers |
-| `make docker-rebuild` | Rebuild sem cache |
-| `make docker-pull` | Atualiza imagens |
-| `make restart` | Reinicia containers |
-| `make shell-api` | Shell do container API |
-| `make shell-db` | Shell do container DB |
-| `make shell-ollama` | Shell do container Ollama |
+| `make docker-rebuild` | Rebuild without cache |
+| `make docker-pull` | Update images |
+| `make restart` | Restart containers |
+| `make shell-api` | API container shell |
+| `make shell-db` | DB container shell |
+| `make shell-ollama` | Ollama container shell |
 
 ---
 
-## ✅ Critérios de Aceitação
+## ✅ Acceptance Criteria
 
-- [x] Criar `scripts/setup.ps1` (setup inicial Windows)
-- [x] Criar `scripts/setup.sh` (setup inicial Linux/Mac)
-- [x] Criar `Makefile` com comandos: up, down, build, logs, seed, clean
-- [x] Scripts verificam pré-requisitos (Docker, Ollama)
-- [x] Scripts criam `.env` automaticamente se não existir
-- [x] Adicionar mensagens coloridas e informativas
-- [x] Makefile funcional em sistemas Unix
+- [x] Create `scripts/setup.ps1` (initial setup Windows)
+- [x] Create `scripts/setup.sh` (initial setup Linux/Mac)
+- [x] Create Makefile with commands: up, down, build, logs, seed, clean
+- [x] Scripts check prerequisites (Docker, Ollama)
+- [x] Scripts create `.env` automatically if missing
+- [x] Colored, informative messages
+- [x] Makefile functional on Unix systems
 
 ---
 
-## 📋 Verificação de Pré-Requisitos
+## 📋 Prerequisite Checks
 
 ### Windows (setup.ps1)
 ```powershell
-# Verifica:
+# Checks:
 where docker        # Docker Desktop
 docker compose      # Docker Compose v2
 where dotnet        # .NET SDK
@@ -105,7 +105,7 @@ where dotnet        # .NET SDK
 
 ### Linux/Mac (setup.sh)
 ```bash
-# Verifica:
+# Checks:
 command -v docker
 docker compose version
 command -v dotnet
@@ -113,73 +113,73 @@ command -v dotnet
 
 ---
 
-## 🚀 Exemplos de Uso
+## 🚀 Usage Examples
 
-### Setup Completo (Windows)
+### Full Setup (Windows)
 ```powershell
-# Executar setup
+# Run setup
 .\scripts\setup.ps1
 
-# Iniciar API
+# Start API
 dotnet run --project src/KernelMind.Api
 
-# Testar
+# Test
 curl http://localhost:5076/health
 ```
 
-### Setup Completo (Linux/Mac)
+### Full Setup (Linux/Mac)
 ```bash
-# Executar setup
+# Run setup
 chmod +x scripts/setup.sh
 ./scripts/setup.sh
 
-# Iniciar API
+# Start API
 dotnet run --project src/KernelMind.Api
 
-# Testar
+# Test
 curl http://localhost:5076/health
 ```
 
-### Usando Makefile
+### Using Makefile
 ```bash
-# Setup completo
+# Full setup
 make setup
 
-# Apenas infraestrutura Docker
+# Infrastructure only
 make up
 
-# Ver status
+# Check status
 make status
 
-# Ver logs
+# View logs
 make logs-api
 
-# Aplicar migrations
+# Apply migrations
 make db-update
 
-# Limpar tudo
+# Clean everything
 make clean-all
 ```
 
 ---
 
-## 📊 Estrutura de Arquivos
+## 📊 File Structure
 
 ```
 scripts/
-├── setup.ps1        # Windows PowerShell (162 linhas)
-├── setup.sh         # Linux/Mac Bash (160 linhas)
-└── README.md        # Documentação
+├── setup.ps1        # Windows PowerShell (162 lines)
+├── setup.sh         # Linux/Mac Bash (160 lines)
+└── README.md        # Documentation
 
-Makefile              # 155 linhas
+Makefile              # 155 lines
 
-.env.example          # 90 variáveis
-.gitignore           # 433 linhas
+.env.example          # 90 variables
+.gitignore           # 433 lines
 ```
 
 ---
 
-## 🎨 Cores e Formatação
+## 🎨 Colors and Formatting
 
 ### Windows (ANSI codes)
 ```batch
@@ -201,39 +201,39 @@ NC='\033[0m'
 
 ---
 
-## ⚠️ Notas Importantes
+## ⚠️ Important Notes
 
-1. **Permissões Linux/Mac:**
+1. **Linux/Mac permissions:**
    ```bash
    chmod +x scripts/setup.sh
    ```
 
-2. **PowerShell no Windows:**
-   - O script usa comandos nativos do PowerShell
-   - Requer PowerShell 5.1 ou superior
+2. **PowerShell on Windows:**
+   - Script uses native PowerShell commands
+   - Requires PowerShell 5.1 or higher
 
 3. **Docker Compose:**
-   - Suporta tanto `docker compose` (v2) quanto `docker-compose` (v1)
+   - Supports both `docker compose` (v2) and `docker-compose` (v1)
 
-4. **Tempo de Espera:**
-   - PostgreSQL: ~2-5 segundos
-   - Ollama: Variável (primeira execução baixa modelos)
-
----
-
-## 🔧 Próximos Passos
-
-1. **US-006:** Criar projetos .NET 10
-2. **US-007:** Implementar entidades do domínio
-3. **US-008:** Configurar Entity Framework Core
-4. **US-009:** Criar primeiras migrations
+4. **Wait time:**
+   - PostgreSQL: ~2-5 seconds
+   - Ollama: Variable (first run downloads models)
 
 ---
 
-## 📈 Resumo
+## 🔧 Next Steps
 
-- **Scripts criados:** 2 (setup.ps1, setup.sh)
-- **Comandos Makefile:** 22 comandos
-- **Linhas de código:** ~320 linhas de scripts
-- **Plataformas suportadas:** Windows, Linux, macOS
-- **Build verificado:** ✅ SUCCESS (0 errors, 0 warnings)
+1. **US-006:** Create .NET 10 projects
+2. **US-007:** Implement domain entities
+3. **US-008:** Configure Entity Framework Core
+4. **US-009:** Create initial migrations
+
+---
+
+## 📈 Summary
+
+- **Scripts created:** 2 (setup.ps1, setup.sh)
+- **Makefile commands:** 22 commands
+- **Lines of code:** ~320 lines of scripts
+- **Supported platforms:** Windows, Linux, macOS
+- **Build verified:** ✅ SUCCESS (0 errors, 0 warnings)
