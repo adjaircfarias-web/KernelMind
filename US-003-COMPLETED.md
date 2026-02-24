@@ -1,17 +1,17 @@
-# ✅ US-003: Criar Projetos .NET e Angular - CONCLUÍDA
+# ✅ US-003: Create .NET and Angular Projects - COMPLETED
 
-**Data:** 06/02/2026  
-**Status:** ✅ COMPLETADA  
-**Tempo:** ~2 horas
+**Date:** 2026-02-06  
+**Status:** ✅ COMPLETED  
+**Duration:** ~2 hours
 
 ---
 
-## 📦 Projetos Criados
+## 📦 Created Projects
 
 ### 1. KernelMind.Domain (.NET Class Library)
-**Responsabilidade:** Entidades e interfaces do domínio
+**Responsibility:** Domain entities and interfaces
 
-**Arquivos criados:**
+**Created files:**
 ```
 Entities/
 ├── Pizza.cs
@@ -30,27 +30,27 @@ Interfaces/
 └── IChatSessionRepository.cs
 ```
 
-**Padrões aplicados:**
-- ✅ Todas as entidades são `record` (imutáveis)
-- ✅ Propriedades usam `init` setters
-- ✅ Nomes em inglês
-- ✅ Nullable reference types habilitados
+**Applied patterns:**
+- ✅ All entities are `record` (immutable)
+- ✅ Properties use `init` setters
+- ✅ English names
+- ✅ Nullable reference types enabled
 
 ---
 
 ### 2. KernelMind.Core (.NET Class Library)
-**Responsabilidade:** Plugins do Semantic Kernel e lógica de negócio
+**Responsibility:** Semantic Kernel plugins and business logic
 
-**Arquivos criados:**
+**Created files:**
 ```
 Plugins/
-├── MenuPlugin.cs         # Consulta cardápio
-├── OrderPlugin.cs        # Gerenciamento de pedidos
-├── CalculationPlugin.cs  # Cálculos de preços
-└── ContextPlugin.cs      # Contexto da conversa
+├── MenuPlugin.cs         # Menu query
+├── OrderPlugin.cs        # Order management
+├── CalculationPlugin.cs  # Price calculations
+└── ContextPlugin.cs      # Conversation context
 ```
 
-**Plugins implementados:**
+**Implemented plugins:**
 - **MenuPlugin:** `get_menu`, `get_pizza_details`, `search_pizzas`
 - **OrderPlugin:** `create_order`, `add_item_to_order`, `confirm_order`, `cancel_order`
 - **CalculationPlugin:** `calculate_total`, `calculate_order_total`, `apply_discount`
@@ -64,9 +64,9 @@ Plugins/
 ---
 
 ### 3. KernelMind.Infrastructure (.NET Class Library)
-**Responsabilidade:** Acesso a dados e integrações externas
+**Responsibility:** Data access and external integrations
 
-**Arquivos criados:**
+**Created files:**
 ```
 Data/
 └── AppDbContext.cs
@@ -78,11 +78,11 @@ Repositories/
 ```
 
 **Features:**
-- ✅ Entity Framework Core com PostgreSQL
-- ✅ Extensão pgvector configurada
-- ✅ Índices de vetores para busca semântica
-- ✅ Repositórios implementando interfaces do domínio
-- ✅ Configuração JSONB para dados flexíveis
+- ✅ Entity Framework Core with PostgreSQL
+- ✅ pgvector extension configured
+- ✅ Vector indexes for semantic search
+- ✅ Repositories implementing domain interfaces
+- ✅ JSONB configuration for flexible data
 
 **NuGet Packages:**
 - Microsoft.EntityFrameworkCore 9.0.1
@@ -93,9 +93,9 @@ Repositories/
 ---
 
 ### 4. KernelMind.Api (ASP.NET 10 Web API)
-**Responsabilidade:** API REST e ponto de entrada
+**Responsibility:** REST API and entry point
 
-**Arquivos criados:**
+**Created files:**
 ```
 Controllers/
 ├── MenuController.cs     # GET /api/menu
@@ -107,30 +107,30 @@ Program.cs
 appsettings.json
 ```
 
-**Endpoints implementados:**
-- `GET /api/menu` - Lista cardápio
-- `GET /api/menu/{id}` - Detalhes da pizza
-- `GET /api/menu/search?query={q}` - Busca por nome
-- `GET /api/orders` - Lista pedidos
-- `GET /api/orders/{id}` - Detalhes do pedido
-- `GET /api/orders/customer/{customerId}` - Pedidos do cliente
-- `POST /api/orders` - Cria novo pedido
-- `POST /api/chat/message` - Envia mensagem ao bot
-- `POST /api/chat/stream` - Streaming de resposta (IAsyncEnumerable)
+**Implemented endpoints:**
+- `GET /api/menu` - List menu
+- `GET /api/menu/{id}` - Pizza details
+- `GET /api/menu/search?query={q}` - Search by name
+- `GET /api/orders` - List orders
+- `GET /api/orders/{id}` - Order details
+- `GET /api/orders/customer/{customerId}` - Customer orders
+- `POST /api/orders` - Create new order
+- `POST /api/chat/message` - Send message to bot
+- `POST /api/chat/stream` - Response streaming (IAsyncEnumerable)
 - `GET /health` - Health check
 
 **Features:**
-- ✅ Swagger/OpenAPI documentação
-- ✅ CORS configurado
-- ✅ HTTP Streaming implementado
+- ✅ Swagger/OpenAPI documentation
+- ✅ CORS configured
+- ✅ HTTP Streaming implemented
 - ✅ Health checks
 
 ---
 
 ### 5. KernelMind.Web (Angular 19)
-**Responsabilidade:** Frontend do chatbot
+**Responsibility:** Chatbot frontend
 
-**Arquivos criados:**
+**Created files:**
 ```
 src/
 ├── app/
@@ -145,15 +145,15 @@ tsconfig.json
 tsconfig.app.json
 ```
 
-**Configurações:**
+**Configuration:**
 - ✅ Angular 19 standalone components
 - ✅ TypeScript 5.6
-- ✅ Material Design (preparado)
-- ✅ HTTP Client configurado
+- ✅ Material Design (prepared)
+- ✅ HTTP Client configured
 
 ---
 
-## 🔗 Estrutura da Solução
+## 🔗 Solution Structure
 
 ```
 KernelMind.slnx
@@ -171,30 +171,30 @@ KernelMind.slnx
 
 ---
 
-## ✅ Critérios de Aceitação
+## ✅ Acceptance Criteria
 
-- [x] Criar projetos .NET (Domain, Core, Infrastructure, Api)
-- [x] Criar projeto Angular (Web)
-- [x] Configurar referências entre projetos
-- [x] Implementar entidades do domínio (records)
-- [x] Implementar Plugins do Semantic Kernel
-- [x] Implementar repositórios com EF Core
-- [x] Implementar controllers da API
-- [x] Configurar Swagger/OpenAPI
-- [x] Build da solução funcionando
-- [x] Dockerfiles compatíveis com estrutura real
+- [x] Create .NET projects (Domain, Core, Infrastructure, Api)
+- [x] Create Angular project (Web)
+- [x] Configure project references
+- [x] Implement domain entities (records)
+- [x] Implement Semantic Kernel plugins
+- [x] Implement repositories with EF Core
+- [x] Implement API controllers
+- [x] Configure Swagger/OpenAPI
+- [x] Solution build working
+- [x] Dockerfiles compatible with actual structure
 
 ---
 
-## 🧪 Testes Realizados
+## 🧪 Tests Performed
 
 ```bash
-# Build da solução completa
+# Full solution build
 ✅ dotnet build --nologo
    0 Warning(s), 0 Error(s)
-   Tempo: ~3 segundos
+   Time: ~3 seconds
 
-# Projetos compilados:
+# Compiled projects:
 ✅ KernelMind.Domain.dll
 ✅ KernelMind.Core.dll
 ✅ KernelMind.Infrastructure.dll
@@ -203,58 +203,58 @@ KernelMind.slnx
 
 ---
 
-## 📊 Estatísticas
+## 📊 Statistics
 
-- **Total de arquivos criados:** 30+
-- **Linhas de código:** ~2.500
-- **Entidades:** 6 (Pizza, Order, OrderItem, Customer, ChatSession, ChatMessage)
+- **Total files created:** 30+
+- **Lines of code:** ~2,500
+- **Entities:** 6 (Pizza, Order, OrderItem, Customer, ChatSession, ChatMessage)
 - **Plugins:** 4 (Menu, Order, Calculation, Context)
 - **Controllers:** 3 (Menu, Orders, Chat)
-- **Repositórios:** 3 (Pizza, Order, ChatSession)
-- **Funções de Plugins:** 15
+- **Repositories:** 3 (Pizza, Order, ChatSession)
+- **Plugin functions:** 15
 
 ---
 
-## 🐛 Problemas Encontrados e Resolvidos
+## 🐛 Issues Found and Resolved
 
 ### 1. NuGet Package Version Conflicts
-**Problema:** Microsoft.Extensions.Logging.Abstractions downgrade error
-**Solução:** Atualizado para versão 9.0.1 para compatibilidade com EF Core 9.0.1
+**Problem:** Microsoft.Extensions.Logging.Abstractions downgrade error
+**Solution:** Updated to version 9.0.1 for compatibility with EF Core 9.0.1
 
 ### 2. Missing using directive
-**Problema:** DescriptionAttribute not found in plugin files
-**Solução:** Adicionado `using System.ComponentModel;`
+**Problem:** DescriptionAttribute not found in plugin files
+**Solution:** Added `using System.ComponentModel;`
 
 ### 3. Vector distance calculation
-**Problema:** L2Distance method not available on float[]
-**Solução:** Simplificado para retornar todas as pizzas (implementação completa futura)
+**Problem:** L2Distance method not available on float[]
+**Solution:** Simplified to return all pizzas (full implementation later)
 
 ### 4. Target Framework
-**Problema:** Npgsql.EntityFrameworkCore.PostgreSQL 9.0.3 não suporta EF Core 10.0.0
-**Solução:** Downgrade EF Core para 9.0.1
+**Problem:** Npgsql.EntityFrameworkCore.PostgreSQL 9.0.3 does not support EF Core 10.0.0
+**Solution:** Downgrade EF Core to 9.0.1
 
 ---
 
-## 📝 Convenções de Código Aplicadas
+## 📝 Applied Code Conventions
 
-✅ **Todas as entidades são `record`** (Domain, DTOs)
-✅ **Classes para serviços e plugins**
-✅ **Propriedades imutáveis com `init`**
-✅ **Nomes em inglês** (Pizza, Order, Customer)
-✅ **Nullable reference types habilitados**
-✅ **Documentação XML em português** (comentários)
-✅ **Código em inglês** (nomes de classes, métodos, variáveis)
+✅ **All entities are `record`** (Domain, DTOs)
+✅ **Classes for services and plugins**
+✅ **Immutable properties with `init`**
+✅ **English names** (Pizza, Order, Customer)
+✅ **Nullable reference types enabled**
+✅ **XML documentation** (comments)
+✅ **Code in English** (class, method, variable names)
 
 ---
 
-## 🚀 Próximos Passos (US-004+)
+## 🚀 Next Steps (US-004+)
 
-1. **US-004:** Implementar integração completa com Ollama
-2. **US-005:** Criar interface de chat no Angular
-3. **US-006:** Implementar sistema de embeddings/RAG
-4. **US-007:** Adicionar autenticação JWT
-5. **US-008:** Criar migrations do EF Core
-6. **US-009:** Testar Docker Compose completo
+1. **US-004:** Implement full Ollama integration
+2. **US-005:** Create chat interface in Angular
+3. **US-006:** Implement embeddings/RAG system
+4. **US-007:** Add JWT authentication
+5. **US-008:** Create EF Core migrations
+6. **US-009:** Test full Docker Compose
 
 ---
 
@@ -268,12 +268,11 @@ KernelMind.slnx
    - KernelMind.Api: OK
 
 ✅ Dockerfiles: READY
-   - Multi-stage builds configurados
-   - Development e production stages
-   - Hot reload para dev
+   - Multi-stage builds configured
+   - Development and production stages
+   - Hot reload for dev
 
 ⚠️ Angular: STRUCTURE READY
-   - Package.json criado
-   - Aguardando `npm install` para validação
+   - Package.json created
+   - Awaiting `npm install` for validation
 ```
-

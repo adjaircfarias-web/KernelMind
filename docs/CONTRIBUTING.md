@@ -1,20 +1,20 @@
-# Guia de Contribuição – KernelMind
+# Contributing Guide – KernelMind
 
 ---
 
-## Comece por aqui
+## Start Here
 
-1. **Setup:** Siga o [README principal](../README.md) (Como rodar – desenvolvimento local).
-2. **Arquitetura:** Leia [ARCHITECTURE.md](ARCHITECTURE.md) para entender camadas e fluxos.
-3. **API:** Consulte [API.md](API.md) e o Swagger para contratos e exemplos.
+1. **Setup:** Follow the [main README](../README.md) (How to run – local development).
+2. **Architecture:** Read [ARCHITECTURE.md](ARCHITECTURE.md) to understand layers and flows.
+3. **API:** Check [API.md](API.md) and Swagger for contracts and examples.
 
 ---
 
-## Branches e commits
+## Branches and Commits
 
-- **Branch principal:** `main`.
-- **Features:** branch a partir de `main`, ex.: `feature/nome-da-feature` ou `fix/descricao-do-fix`.
-- **Commits:** mensagens claras, preferencialmente em inglês. Exemplos:
+- **Main branch:** `main`.
+- **Features:** branch from `main`, e.g. `feature/feature-name` or `fix/fix-description`.
+- **Commits:** clear messages, preferably in English. Examples:
   - `feat: add menu plugin`
   - `fix: resolve order calculation bug`
   - `docs: update API documentation`
@@ -24,24 +24,24 @@
 
 ## Pull Requests
 
-- Abra PR contra `main` com descrição objetiva do que foi alterado e por quê.
-- **Requisitos mínimos:**
-  - Testes existentes passando (`dotnet test`).
-  - Novas funcionalidades ou mudanças de comportamento cobertas por testes quando fizer sentido.
-  - Documentação relevante atualizada (README, docs/, comentários em código).
-- Mudanças que afetem arquitetura, contratos de API ou segurança devem ser descritas no PR e, se necessário, refletidas em [ARCHITECTURE.md](ARCHITECTURE.md) e [API.md](API.md).
+- Open a PR against `main` with a clear description of what changed and why.
+- **Minimum requirements:**
+  - Existing tests passing (`dotnet test`).
+  - New features or behavior changes covered by tests when appropriate.
+  - Relevant documentation updated (README, docs/, code comments).
+- Changes that affect architecture, API contracts or security should be described in the PR and, if needed, reflected in [ARCHITECTURE.md](ARCHITECTURE.md) and [API.md](API.md).
 
 ---
 
-## Padrões de código
+## Code Standards
 
-- **Backend (.NET):** C# com convenções do projeto; XML docs em inglês para APIs públicas; comentários podem ser em português.
-- **API:** Use DTOs para request/response; validação com atributos (ex.: `[Required]`); não expor entidades de domínio diretamente nos controllers.
-- **Frontend (Angular):** Componentes standalone; estado compartilhado via serviços (ex.: `OrderStateService`); tipagem TypeScript consistente.
-- **IA/Prompts:** Prompts de sistema ficam em `KernelMind.Core/Prompts` (ex.: `ChatPrompts`); regras de tools documentadas na arquitetura ou em docs de IA.
+- **Backend (.NET):** C# following project conventions; XML docs in English for public APIs; comments may be in Portuguese.
+- **API:** Use DTOs for request/response; validation with attributes (e.g. `[Required]`); do not expose domain entities directly in controllers.
+- **Frontend (Angular):** Standalone components; shared state via services (e.g. `OrderStateService`); consistent TypeScript typing.
+- **AI/Prompts:** System prompts live in `KernelMind.Core/Prompts` (e.g. `ChatPrompts`); tool rules documented in architecture or AI docs.
 
 ---
 
-## Dúvidas
+## Questions
 
-Em caso de dúvida sobre onde colocar código, convenções ou documentação, abra uma issue ou discuta no PR.
+If unsure about where to put code, conventions or documentation, open an issue or discuss in the PR.

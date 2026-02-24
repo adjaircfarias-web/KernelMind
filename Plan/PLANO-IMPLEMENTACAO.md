@@ -1,60 +1,62 @@
-# 🧠 KernelMind - Plano de Implementação
+# 🧠 KernelMind - Implementation Plan
 
-**Chatbot Inteligente para Compra de Pizzas com IA Generativa**
+**AI-Powered Pizza Ordering Chatbot**
+
+*(This document is historical. For current architecture see [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md).)*
 
 ---
 
-## 📋 Visão Geral do Projeto
+## 📋 Project Overview
 
-### 🎯 Objetivo
-Desenvolver um chatbot conversacional inteligente para pedidos de pizza, demonstrando as capacidades do **Semantic Kernel**, **RAG (Retrieval Augmented Generation)**, **Embeddings** e **Plugins (Tooling)** integrados com modelo de linguagem local via Ollama.
+### 🎯 Goal
+Build an intelligent conversational chatbot for pizza orders, demonstrating **Semantic Kernel**, **RAG (Retrieval Augmented Generation)**, **Embeddings** and **Plugins (Tooling)** integrated with a local language model via Ollama.
 
-### 🏷️ Metadados
-- **Nome do Projeto**: KernelMind
-- **Versão**: 1.0.0
-- **Status**: Em planejamento
-- **Data de Início**: 2026-02-06
+### 🏷️ Metadata
+- **Project Name**: KernelMind
+- **Version**: 1.0.0
+- **Status**: In planning
+- **Start Date**: 2026-02-06
 - **Stack**: .NET 10, C#, Semantic Kernel, PostgreSQL, Ollama
 
-### 🎨 Conceito
-O usuário interage com um chatbot que:
-1. ✅ Entende pedidos em linguagem natural
-2. ✅ Consulta o cardápio via RAG (busca semântica)
-3. ✅ Calcula preços e confirma pedidos via Plugins
-4. ✅ Mantém contexto da conversa
-5. ✅ Processa tudo localmente (sem APIs externas)
+### 🎨 Concept
+The user interacts with a chatbot that:
+1. ✅ Understands orders in natural language
+2. ✅ Queries the menu via RAG (semantic search)
+3. ✅ Calculates prices and confirms orders via Plugins
+4. ✅ Maintains conversation context
+5. ✅ Processes everything locally (no external APIs)
 
 ---
 
-## 🎯 Funcionalidades Principais
+## 🎯 Main Features
 
-### 1. 🤖 Chatbot Conversacional
-- Interface de chat simples (CLI ou Web)
-- Processamento de linguagem natural
-- Manutenção de contexto da conversa
-- Respostas em português
+### 1. 🤖 Conversational Chatbot
+- Simple chat interface (CLI or Web)
+- Natural language processing
+- Conversation context maintenance
+- Responses in Portuguese
 
 ### 2. 📚 RAG + Embeddings
-- Vetorização do cardápio de pizzas
-- Busca semântica por ingredientes/sabores
-- Recuperação de informações relevantes
-- Geração de respostas contextualizadas
+- Pizza menu vectorization
+- Semantic search by ingredients/flavors
+- Relevant information retrieval
+- Contextualized response generation
 
 ### 3. 🔌 Plugins (Tooling)
-- **MenuPlugin**: Consultar cardápio, ingredientes, preços
-- **PedidoPlugin**: Adicionar itens, confirmar pedido, cancelar
-- **CalculoPlugin**: Calcular total, aplicar descontos, taxa de entrega
-- **ContextoPlugin**: Manter histórico da conversa
+- **MenuPlugin**: Query menu, ingredients, prices
+- **OrderPlugin**: Add items, confirm order, cancel
+- **CalculationPlugin**: Calculate total, apply discounts, delivery fee
+- **ContextPlugin**: Maintain conversation history
 
-### 4. 🗄️ Persistência
-- PostgreSQL para dados estruturados
-- pgvector para armazenamento de embeddings
-- Histórico de conversas
-- Dados de pedidos
+### 4. 🗄️ Persistence
+- PostgreSQL for structured data
+- pgvector for embedding storage
+- Conversation history
+- Order data
 
 ---
 
-## 🏗️ Arquitetura do Sistema
+## 🏗️ System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -92,7 +94,7 @@ O usuário interage com um chatbot que:
 
 ---
 
-## 📦 Estrutura do Projeto
+## 📦 Project Structure
 
 ```
 KernelMind/

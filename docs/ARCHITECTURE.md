@@ -1,17 +1,17 @@
-# 🧠 KernelMind - Documentação de Arquitetura
+# 🧠 KernelMind – Architecture Documentation
 
-## 📋 Visão Geral
+## 📋 Overview
 
-KernelMind é uma aplicação completa de chatbot para pedidos de pizza com IA, demonstrando:
-- **Semantic Kernel** com LLM local (Ollama)
-- **RAG (Retrieval Augmented Generation)** com embeddings
-- **Plugins** para lógica de negócios
-- **Angular 19** frontend moderno
+KernelMind is a full AI-powered pizza order chatbot application, demonstrating:
+- **Semantic Kernel** with local LLM (Ollama)
+- **RAG (Retrieval Augmented Generation)** with embeddings
+- **Plugins** for business logic
+- **Angular 19** modern frontend
 - **.NET 10** backend API
-- **PostgreSQL + pgvector** para busca semântica
-- **Docker Compose** para orquestração
+- **PostgreSQL + pgvector** for semantic search
+- **Docker Compose** for orchestration
 
-### Fluxo em alto nível
+### High-Level Flow
 
 ```mermaid
 flowchart LR
@@ -31,7 +31,7 @@ flowchart LR
 
 ---
 
-## 🏗️ Arquitetura de Camadas
+## 🏗️ Layered Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -115,63 +115,63 @@ flowchart LR
 
 ### MenuPlugin
 ```csharp
-// Funções disponíveis
-- list_menu() → Formata e retorna o cardápio completo
-- search_pizza(query) → Busca pizzas por nome
-- get_pizza_details(name) → Detalhes de uma pizza
-- get_pizza_ingredients(name) → Lista ingredientes
-- get_vegetarian_pizzas() → Filtra pizzas vegetarianas
-- get_spicy_pizzas() → Filtra pizzas picantes
-- get_popular_pizzas() → Retorna pizzas populares
+// Available functions
+- list_menu() → Formats and returns the full menu
+- search_pizza(query) → Search pizzas by name
+- get_pizza_details(name) → Details for a pizza
+- get_pizza_ingredients(name) → List ingredients
+- get_vegetarian_pizzas() → Filter vegetarian pizzas
+- get_spicy_pizzas() → Filter spicy pizzas
+- get_popular_pizzas() → Return popular pizzas
 ```
 
 ### OrderPlugin
 ```csharp
-// Funções disponíveis
-- create_order(customer, address, phone) → Cria novo pedido
-- add_item_to_order(order_token, pizza_name, quantity) → Adiciona item
-- view_order(order_token) → Visualiza pedido atual
-- confirm_order(order_token) → Confirma envio para cozinha
-- cancel_order(order_token) → Cancela pedido
-- get_order_tracking(order_token) → Status de rastreamento
-- add_tip(order_token, amount) → Adiciona gorjeta
+// Available functions
+- create_order(customer, address, phone) → Create new order
+- add_item_to_order(order_token, pizza_name, quantity) → Add item
+- view_order(order_token) → View current order
+- confirm_order(order_token) → Confirm order to kitchen
+- cancel_order(order_token) → Cancel order
+- get_order_tracking(order_token) → Tracking status
+- add_tip(order_token, amount) → Add tip
 ```
 
 ### CalculationPlugin
 ```csharp
-// Funções disponíveis
-- calculate_total(subtotal) → Calcula total com entrega
-- calculate_delivery_fee(distance) → Taxa por distância
-- estimate_delivery_time(distance) → Tempo estimado
-- apply_discount(total, coupon_code) → Aplica cupom
-- check_promotion() → Promoções do dia
-- split_bill(total, people) → Divide conta
-- calculate_total_with_delivery(subtotal, distance) → Total completo
+// Available functions
+- calculate_total(subtotal) → Calculate total with delivery
+- calculate_delivery_fee(distance) → Fee by distance
+- estimate_delivery_time(distance) → Estimated time
+- apply_discount(total, coupon_code) → Apply coupon
+- check_promotion() → Day promotions
+- split_bill(total, people) → Split bill
+- calculate_total_with_delivery(subtotal, distance) → Full total
 ```
 
 ### ContextPlugin
 ```csharp
-// Funções disponíveis
-- set_context(session, key, value) → Armazena informação
-- get_context(session, key) → Recupera informação
-- clear_context(session) → Limpa contexto
-- get_conversation_summary(session) → Resumo da conversa
-- save_message(session, role, content) → Salva mensagem
-- get_history(session) → Histórico de mensagens
+// Available functions
+- set_context(session, key, value) → Store information
+- get_context(session, key) → Retrieve information
+- clear_context(session) → Clear context
+- get_conversation_summary(session) → Conversation summary
+- save_message(session, role, content) → Save message
+- get_history(session) → Message history
 ```
 
 ---
 
 ## 📚 RAG (Retrieval Augmented Generation)
 
-### Pipeline de Vetorização
+### Vectorization Pipeline
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                   Pipeline RAG                           │
+│                   RAG Pipeline                           │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
 │  1. TEXT INPUT                                         │
-│     "pizza de mussarela com tomate e manjericão"        │
+│     "pizza with mozzarella tomato and basil"            │
 │                      │                                  │
 │                      ▼                                  │
 │  2. EMBEDDING GENERATION                               │
@@ -192,27 +192,27 @@ flowchart LR
 │                      ▼                                  │
 │  5. LLM PROMPT COMPLETION                             │
 │     "Based on these pizzas: [context]"                  │
-│     + User query: "o que você tem?"                    │
+│     + User query: "what do you have?"                   │
 │                      │                                  │
 │                      ▼                                  │
 │  6. GENERATED RESPONSE                                 │
-│     "Temos várias pizzas ótimas! A Margherita é         │
-│      clássica com tomate, mussarela e manjericão...     │
-│      Gostaria de pedir?"                               │
+│     "We have great pizzas! Margherita is classic       │
+│      with tomato, mozzarella and basil...              │
+│      Would you like to order?"                         │
 └─────────────────────────────────────────────────────────┘
 ```
 
 ### Embedding Service
 ```csharp
-// Gera embeddings de 768 dimensões
+// Generates 768-dimensional embeddings
 public async Task<float[]> GenerateEmbeddingAsync(string text)
 {
-    // Usa Ollama com modelo nomic-embed-text
+    // Uses Ollama with nomic-embed-text model
     var embeddings = await _embeddingGenerator.GenerateAsync(text);
     return embeddings[0].Vector.ToArray();
 }
 
-// Calcula similaridade cosseno
+// Cosine similarity
 public float CalculateSimilarity(float[] v1, float[] v2)
 {
     var dot = v1.Zip(v2).Sum(x => x.First * x.Second);
@@ -227,38 +227,38 @@ public float CalculateSimilarity(float[] v1, float[] v2)
 ## 🌐 API Endpoints
 
 ### Chat
-O serviço de chat limita o histórico às **últimas 10 mensagens** (modo normal e streaming) para manter performance e contexto estável. Ver [docs/API.md](API.md) para contratos e streaming.
+The chat service limits history to the **last 10 messages** (normal and streaming mode) to keep performance and context stable. See [docs/API.md](API.md) for contracts and streaming.
 
 | Method | Endpoint | Description |
 |--------|-----------|-------------|
-| POST | /api/chat/message | Enviar mensagem |
-| POST | /api/chat/stream | Streaming SSE |
-| POST | /api/chat/stream/raw | Streaming raw SSE |
+| POST | /api/chat/message | Send message |
+| POST | /api/chat/stream | SSE streaming |
+| POST | /api/chat/stream/raw | Raw SSE streaming |
 | GET | /api/chat/health | Health check |
 
 ### Menu
 | Method | Endpoint | Description |
 |--------|-----------|-------------|
-| GET | /api/menu | Lista completa |
-| GET | /api/menu/{id} | Pizza por ID |
-| GET | /api/menu/search | Busca por nome |
-| GET | /api/menu/semantic-search | Busca semântica |
-| GET | /api/menu/hybrid-search | Busca híbrida |
-| GET | /api/menu/{id}/similar | Pizzas similares |
-| POST | /api/menu/vectorize | Vetoriza cardápio |
-| POST | /api/menu/reindex | Re-vetoriza |
-| GET | /api/menu/categories | Lista categorias |
-| GET | /api/menu/category/{name} | Por categoria |
+| GET | /api/menu | Full list |
+| GET | /api/menu/{id} | Pizza by ID |
+| GET | /api/menu/search | Search by name |
+| GET | /api/menu/semantic-search | Semantic search |
+| GET | /api/menu/hybrid-search | Hybrid search |
+| GET | /api/menu/{id}/similar | Similar pizzas |
+| POST | /api/menu/vectorize | Vectorize menu |
+| POST | /api/menu/reindex | Re-vectorize |
+| GET | /api/menu/categories | List categories |
+| GET | /api/menu/category/{name} | By category |
 
 ### Orders
 | Method | Endpoint | Description |
 |--------|-----------|-------------|
-| GET | /api/orders | Lista pedidos |
-| GET | /api/orders/{id} | Detalhes |
-| POST | /api/orders | Cria pedido |
-| PATCH | /api/orders/{id}/status | Atualiza status |
-| POST | /api/orders/{id}/cancel | Cancela |
-| GET | /api/orders/{id}/total | Calcula total |
+| GET | /api/orders | List orders |
+| GET | /api/orders/{id} | Details |
+| POST | /api/orders | Create order |
+| PATCH | /api/orders/{id}/status | Update status |
+| POST | /api/orders/{id}/cancel | Cancel |
+| GET | /api/orders/{id}/total | Calculate total |
 
 ### Health
 | Method | Endpoint | Description |
@@ -269,9 +269,9 @@ O serviço de chat limita o histórico às **últimas 10 mensagens** (modo norma
 
 ---
 
-## 💾 Schema do Banco de Dados
+## 💾 Database Schema
 
-### Tabelas Principais
+### Main Tables
 
 ```sql
 -- Pizzas
@@ -288,7 +288,7 @@ CREATE TABLE kernelmind.pizzas (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Pedidos
+-- Orders
 CREATE TABLE kernelmind.orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     customer_id UUID,
@@ -300,7 +300,7 @@ CREATE TABLE kernelmind.orders (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Itens do Pedido
+-- Order Items
 CREATE TABLE kernelmind.order_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     order_id UUID REFERENCES kernelmind.orders(id),
@@ -311,7 +311,7 @@ CREATE TABLE kernelmind.order_items (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Sessões de Chat
+-- Chat Sessions
 CREATE TABLE kernelmind.chat_sessions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     session_token VARCHAR(100) UNIQUE NOT NULL,
@@ -321,7 +321,7 @@ CREATE TABLE kernelmind.chat_sessions (
     last_activity_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Mensagens de Chat
+-- Chat Messages
 CREATE TABLE kernelmind.chat_messages (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     session_id UUID REFERENCES kernelmind.chat_sessions(id),
@@ -334,7 +334,7 @@ CREATE TABLE kernelmind.chat_messages (
 
 ---
 
-## 🐳 Orquestração Docker
+## 🐳 Docker Orchestration
 
 ### Services
 | Service | Image | Ports |
@@ -344,7 +344,7 @@ CREATE TABLE kernelmind.chat_messages (
 | backend | kernelmind-api | 5076 |
 | frontend | kernelmind-web | 4200/80 |
 
-### Redes
+### Networks
 ```
 kernelmind-network (bridge)
   Subnet: 172.20.0.0/16
@@ -353,9 +353,9 @@ kernelmind-network (bridge)
 
 ---
 
-## 🔒 Segurança
+## 🔒 Security
 
-### Headers Nginx
+### Nginx Headers
 ```nginx
 add_header X-Frame-Options "SAMEORIGIN" always;
 add_header X-Content-Type-Options "nosniff" always;
@@ -364,15 +364,15 @@ add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 ```
 
 ### Non-root Containers
-- Nginx executa como usuário `nginxuser`
+- Nginx runs as user `nginxuser`
 - Frontend container user ID: 101
-- Backend não requer root
+- Backend does not require root
 
 ---
 
 ## 📊 Performance
 
-### Limites de Recursos
+### Resource Limits
 | Service | Memory | CPU |
 |---------|--------|-----|
 | PostgreSQL | 1GB | 1 core |
@@ -380,22 +380,22 @@ add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 | Backend | 2GB | 1 core |
 | Frontend | 256MB | 0.5 core |
 
-### Otimizações
-- Indexação vetorial IVFFlat
+### Optimizations
+- IVFFlat vector indexing
 - Gzip compression
-- CDN para assets estáticos
+- CDN for static assets
 - Connection pooling
 
 ---
 
-## 🧪 Testes
+## 🧪 Testing
 
-### Cobertura
-- **Unit Tests**: 31 testes
-- **Integration Tests**: 15 testes
-- **Total**: 46 testes
+### Coverage
+- **Unit Tests**: 31 tests
+- **Integration Tests**: 15 tests
+- **Total**: 46 tests
 
-### Projetos de Teste
+### Test Projects
 ```
 tests/
 ├── KernelMind.UnitTests/       # xUnit + Moq
@@ -404,7 +404,7 @@ tests/
 
 ---
 
-## 📁 Estrutura de Pastas
+## 📁 Folder Structure
 
 ```
 KernelMind/

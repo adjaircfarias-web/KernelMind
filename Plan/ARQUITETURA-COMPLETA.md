@@ -1,12 +1,14 @@
-# 🧠 KernelMind - Arquitetura Completa (Atualização)
+# 🧠 KernelMind - Full Architecture (Update)
 
-**Adendo ao Plano de Implementação - Frontend Angular + Docker Compose**
+**Addendum to Implementation Plan - Angular Frontend + Docker Compose**
+
+*(For current architecture in English see [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md).)*
 
 ---
 
-## 🏗️ Arquitetura Atualizada
+## 🏗️ Updated Architecture
 
-### Visão Geral da Arquitetura Full Stack
+### Full Stack Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -43,14 +45,14 @@
 │  │  └─────────────────────┘                                             │ │
 │  └───────────────────────────────────────────────────────────────────────┘ │
 │                                                                             │
-│  🔗 REDE DOCKER: kernelmind-network (todos os containers se comunicam)      │
+│  🔗 DOCKER NETWORK: kernelmind-network (all containers communicate)       │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📁 Estrutura de Pastas Atualizada (Full Stack)
+## 📁 Updated Folder Structure (Full Stack)
 
 ```
 KernelMind/

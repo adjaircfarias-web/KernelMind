@@ -1,64 +1,64 @@
-# KernelMind - Status Final do Projeto
+# KernelMind - Final Project Status
 
-## ✅ Projeto Completo!
+## ✅ Project Complete!
 
-**39/39 User Stories Implementadas (100%)**
+**39/39 User Stories Implemented (100%)**
 
 ---
 
-## 📊 Resumo por Fase
+## 📊 Summary by Phase
 
-### Fase 0 - Setup (5/5 ✅)
-| US | Descrição | Status |
-|----|-----------|--------|
-| US-001 | Repositório Git | ✅ |
-| US-002 | Estrutura de pastas | ✅ |
-| US-003 | Arquitetura em camadas | ✅ |
+### Phase 0 - Setup (5/5 ✅)
+| US | Description | Status |
+|----|-------------|--------|
+| US-001 | Git repository | ✅ |
+| US-002 | Folder structure | ✅ |
+| US-003 | Layered architecture | ✅ |
 | US-004 | Dockerfiles | ✅ |
-| US-005 | Configuração inicial | ✅ |
+| US-005 | Initial configuration | ✅ |
 
-### Fase 1 - Backend Core (6/6 ✅)
-| US | Descrição | Status |
-|----|-----------|--------|
-| US-006 | Projetos .NET 10 | ✅ |
-| US-007 | Entidades do Domínio | ✅ |
+### Phase 1 - Backend Core (6/6 ✅)
+| US | Description | Status |
+|----|-------------|--------|
+| US-006 | .NET 10 projects | ✅ |
+| US-007 | Domain entities | ✅ |
 | US-008 | Entity Framework Core | ✅ |
 | US-009 | Migrations | ✅ |
-| US-010 | Repositórios | ✅ |
-| US-011 | Seed Data | ✅ |
+| US-010 | Repositories | ✅ |
+| US-011 | Seed data | ✅ |
 
-### Fase 2 - Semantic Kernel Plugins (6/6 ✅)
-| US | Descrição | Status |
-|----|-----------|--------|
+### Phase 2 - Semantic Kernel Plugins (6/6 ✅)
+| US | Description | Status |
+|----|-------------|--------|
 | US-012 | MenuPlugin | ✅ |
 | US-013 | ChatService | ✅ |
 | US-014 | OrderPlugin | ✅ |
 | US-015 | CalculationPlugin | ✅ |
 | US-016 | ContextPlugin | ✅ |
-| US-017 | Integração Kernel | ✅ |
+| US-017 | Kernel integration | ✅ |
 
-### Fase 3 - RAG (5/5 ✅)
-| US | Descrição | Status |
-|----|-----------|--------|
-| US-018 | Ollama Integration | ✅ |
+### Phase 3 - RAG (5/5 ✅)
+| US | Description | Status |
+|----|-------------|--------|
+| US-018 | Ollama integration | ✅ |
 | US-019 | EmbeddingService | ✅ |
 | US-020 | VectorSearchService | ✅ |
-| US-021 | Pipeline de Vetorização | ✅ |
+| US-021 | Vectorization pipeline | ✅ |
 | US-022 | Semantic Kernel RAG | ✅ |
 
-### Fase 4 - API REST (4/4 ✅)
-| US | Descrição | Status |
-|----|-----------|--------|
+### Phase 4 - REST API (4/4 ✅)
+| US | Description | Status |
+|----|-------------|--------|
 | US-023 | ChatController | ✅ |
-| US-024 | Streaming SSE | ✅ |
-| US-025 | DTOs e Models | ✅ |
-| US-026 | Error Handling | ✅ |
+| US-024 | SSE streaming | ✅ |
+| US-025 | DTOs and models | ✅ |
+| US-026 | Error handling | ✅ |
 
-### Fase 5 - Frontend Angular (8/8 ✅)
-| US | Descrição | Status |
-|----|-----------|--------|
-| US-027 | Projeto Angular 19 | ✅ |
-| US-028 | Models TypeScript | ✅ |
+### Phase 5 - Angular Frontend (8/8 ✅)
+| US | Description | Status |
+|----|-------------|--------|
+| US-027 | Angular 19 project | ✅ |
+| US-028 | TypeScript models | ✅ |
 | US-029 | ApiService | ✅ |
 | US-030 | ChatService | ✅ |
 | US-031 | ChatComponent | ✅ |
@@ -66,18 +66,18 @@
 | US-033 | OrderComponent | ✅ |
 | US-034 | AppComponent | ✅ |
 
-### Fase 6 - Integração (5/5 ✅)
-| US | Descrição | Status |
-|----|-----------|--------|
+### Phase 6 - Integration (5/5 ✅)
+| US | Description | Status |
+|----|-------------|--------|
 | US-035 | Docker Compose | ✅ |
-| US-036 | Integration Tests | ✅ |
-| US-037 | Unit Tests | ✅ |
-| US-038 | Documentação | ✅ |
-| US-039 | Arquitetura | ✅ |
+| US-036 | Integration tests | ✅ |
+| US-037 | Unit tests | ✅ |
+| US-038 | Documentation | ✅ |
+| US-039 | Architecture | ✅ |
 
 ---
 
-## 🏗️ Arquitetura Implementada
+## 🏗️ Implemented Architecture
 
 ```
 Frontend (Angular 19)
@@ -100,10 +100,10 @@ PostgreSQL + pgvector (768-dim embeddings)
 
 ---
 
-## 🔧 Tecnologias
+## 🔧 Technologies
 
-| Camada | Tecnologia |
-|--------|------------|
+| Layer | Technology |
+|-------|------------|
 | Frontend | Angular 19 + RxJS |
 | Backend | .NET 10 + Semantic Kernel |
 | LLM | Ollama (llama3.1:8b) |
@@ -114,7 +114,7 @@ PostgreSQL + pgvector (768-dim embeddings)
 
 ---
 
-## 📦 Estrutura de Arquivos
+## 📦 File Structure
 
 ```
 KernelMind/
@@ -129,10 +129,10 @@ KernelMind/
 │   ├── ollama/
 │   └── nginx/
 ├── tests/
-│   ├── KernelMind.UnitTests/    # 31 testes
-│   └── KernelMind.IntegrationTests/ # 15 testes
+│   ├── KernelMind.UnitTests/    # 31 tests
+│   └── KernelMind.IntegrationTests/ # 15 tests
 ├── docs/
-│   ├── US-*.md                 # Documentação US
+│   ├── US-*.md                 # US documentation
 │   ├── ARCHITECTURE.md
 │   └── README.md
 └── docker-compose.yml
@@ -140,26 +140,26 @@ KernelMind/
 
 ---
 
-## 🚀 Como Executar
+## 🚀 How to Run
 
-### Docker Compose (Produção)
+### Docker Compose (Production)
 ```bash
 docker-compose up -d --build
 ```
 
-### Docker Compose (Desenvolvimento)
+### Docker Compose (Development)
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
 ```
 
-### Backend Local
+### Local Backend
 ```bash
 cd src/KernelMind.Api
 dotnet restore
 dotnet run -- --seed
 ```
 
-### Frontend Local
+### Local Frontend
 ```bash
 cd src/KernelMind.Web
 npm install
@@ -171,27 +171,27 @@ npm start
 ## 🌐 Endpoints
 
 ### API
-| Endpoint | Descrição |
-|----------|-----------|
-| POST /api/chat/message | Mensagem |
+| Endpoint | Description |
+|----------|-------------|
+| POST /api/chat/message | Message |
 | POST /api/chat/stream | Streaming |
-| GET /api/menu | Cardápio |
-| GET /api/menu/semantic-search | Busca RAG |
-| POST /api/orders | Criar pedido |
+| GET /api/menu | Menu |
+| GET /api/menu/semantic-search | RAG search |
+| POST /api/orders | Create order |
 
 ### Health
-| Endpoint | Descrição |
-|----------|-----------|
+| Endpoint | Description |
+|----------|-------------|
 | GET /health | Health |
 | GET /healthz | Liveness |
 | GET /readyz | Readiness |
 
 ---
 
-## 🧪 Testes
+## 🧪 Tests
 
 ```bash
-# Todos os testes
+# All tests
 dotnet test
 
 # Unit tests
@@ -201,7 +201,7 @@ dotnet test tests/KernelMind.UnitTests
 dotnet test tests/KernelMind.IntegrationTests
 ```
 
-**Total**: 46 testes (31 unit + 15 integration)
+**Total**: 46 tests (31 unit + 15 integration)
 
 ---
 
@@ -215,58 +215,58 @@ dotnet test tests/KernelMind.IntegrationTests
 
 ---
 
-## 🎯 Funcionalidades Implementadas
+## 🎯 Implemented Features
 
-### Chatbot IA
-- Conversa natural com LLM local
-- Streaming de respostas
-- Plugins para operações específicas
+### AI Chatbot
+- Natural conversation with local LLM
+- Response streaming
+- Plugins for specific operations
 
-### Busca Semântica
-- Embeddings de 768 dimensões
-- Similaridade cosseno
-- Recuperação de contexto RAG
+### Semantic Search
+- 768-dimensional embeddings
+- Cosine similarity
+- RAG context retrieval
 
-### Pedidos
-- Criar pedido
-- Adicionar/remover itens
-- Calcular totais
-- Aplicar descontos
-- Confirmar/cancelar
+### Orders
+- Create order
+- Add/remove items
+- Calculate totals
+- Apply discounts
+- Confirm/cancel
 
 ### Interface
-- Chat interativo
-- Visualização de cardápio
-- Carrinho de compras
-- Navegação por abas
+- Interactive chat
+- Menu view
+- Shopping cart
+- Tab navigation
 
 ---
 
-## 📁 Documentação
+## 📁 Documentation
 
-| Documento | Descrição |
-|-----------|-----------|
-| [README.md](README.md) | Visão geral |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arquitetura detalhada |
-| [docs/US-*.md](docs/) | Documentação por US |
-| [docker-compose.yml](docker-compose.yml) | Orquestração |
+| Document | Description |
+|----------|-------------|
+| [README.md](../README.md) | Overview |
+| [docs/ARCHITECTURE.md](ARCHITECTURE.md) | Detailed architecture |
+| [docs/US-*.md](.) | Per-US documentation |
+| [docker-compose.yml](../docker-compose.yml) | Orchestration |
 
 ---
 
-## ✅ Status Final
+## ✅ Final Status
 
 ```
 ╔═══════════════════════════════════════════════════════╗
-║                                                   ║
-║           KERNELMIND - 100% COMPLETO              ║
-║                                                   ║
-║   📊 39/39 User Stories Implementadas            ║
-║   🧪 46 Testes (31 Unit + 15 Integration)        ║
-║   🔧 0 Errors no Build                          ║
-║                                                   ║
+║                                                       ║
+║           KERNELMIND - 100% COMPLETE                  ║
+║                                                       ║
+║   📊 39/39 User Stories Implemented                   ║
+║   🧪 46 Tests (31 Unit + 15 Integration)             ║
+║   🔧 0 Build Errors                                  ║
+║                                                       ║
 ╚═══════════════════════════════════════════════════════╝
 ```
 
 ---
 
-**Feito com 🍕 e 💻**
+**Made with 🍕 and 💻**

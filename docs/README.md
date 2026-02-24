@@ -4,42 +4,42 @@ Technical and business documentation for the KernelMind project.
 
 ---
 
-## Comece por aqui
+## Start Here
 
-| Objetivo | Documento |
-|----------|-----------|
-| Entender a arquitetura e o fluxo do sistema | [ARCHITECTURE.md](ARCHITECTURE.md) |
-| Consultar endpoints e contratos da API | [API.md](API.md) |
-| Rodar o projeto (dev, Docker, produção) | [README principal](../README.md#-como-rodar) |
-| Rodar testes | [TESTING.md](TESTING.md) |
-| Contribuir (branches, PRs, padrões) | [CONTRIBUTING.md](CONTRIBUTING.md) |
-| Deploy e segurança (CORS, TLS, segredos) | [SECURITY.md](SECURITY.md) |
+| Goal | Document |
+|------|----------|
+| Understand architecture and system flow | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| Look up API endpoints and contracts | [API.md](API.md) |
+| Run the project (dev, Docker, production) | [Main README](../README.md#-how-to-run) |
+| Run tests | [TESTING.md](TESTING.md) |
+| Contribute (branches, PRs, standards) | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| Deploy and security (CORS, TLS, secrets) | [SECURITY.md](SECURITY.md) |
 
 ---
 
-## Documentação em docs/
+## Documentation in docs/
 
-| Arquivo | Descrição |
-|---------|-----------|
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Arquitetura de camadas, diagramas, Semantic Kernel, RAG, endpoints, schema do banco, Docker, performance, testes |
-| [API.md](API.md) | Referência da API REST (Chat, Menu, Orders, Customers, Health); exemplos de request/response e streaming SSE |
-| [TESTING.md](TESTING.md) | Onde estão os testes, como rodar (unit + integration), ferramentas e metas de cobertura |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | Convenções de commit/branch, requisitos de PR, padrões de código (backend, API, frontend, prompts) |
-| [SECURITY.md](SECURITY.md) | CORS, TLS, segredos, banco, limites de recursos e logs em produção |
+| File | Description |
+|------|-------------|
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Layered architecture, diagrams, Semantic Kernel, RAG, endpoints, database schema, Docker, performance, testing |
+| [API.md](API.md) | REST API reference (Chat, Menu, Orders, Customers, Health); request/response examples and SSE streaming |
+| [TESTING.md](TESTING.md) | Where tests live, how to run (unit + integration), tools and coverage goals |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Commit/branch conventions, PR requirements, code standards (backend, API, frontend, prompts) |
+| [SECURITY.md](SECURITY.md) | CORS, TLS, secrets, database, resource limits and logging in production |
 
-### Plan/ (na raiz do repo)
+### Plan/ (at repo root)
 
-- [PLANO-IMPLEMENTACAO.md](../Plan/PLANO-IMPLEMENTACAO.md) – Plano técnico e fases (parte histórica; estado atual reflete Angular + API web)
-- [ARQUITETURA-COMPLETA.md](../Plan/ARQUITETURA-COMPLETA.md) – Visão expandida da arquitetura
+- [PLANO-IMPLEMENTACAO.md](../Plan/PLANO-IMPLEMENTACAO.md) – Technical plan and phases (historical; current state reflects Angular + web API)
+- [ARQUITETURA-COMPLETA.md](../Plan/ARQUITETURA-COMPLETA.md) – Expanded architecture view
 - [USER-STORIES.md](../Plan/USER-STORIES.md) – User stories (39 US)
 
 ---
 
-## Padrões
+## Standards
 
-- **Código:** Comentários podem ser em português; XML Documentation em inglês.
-- **Commits:** `feat:`, `fix:`, `docs:`, `refactor:` (ex.: `feat: add menu plugin`).
+- **Code:** Comments may be in Portuguese; XML Documentation in English.
+- **Commits:** `feat:`, `fix:`, `docs:`, `refactor:` (e.g. `feat: add menu plugin`).
 
-## Links úteis
+## Useful Links
 
 - [Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/) · [Angular 19](https://angular.io/docs) · [pgvector](https://github.com/pgvector/pgvector) · [Ollama](https://ollama.ai)

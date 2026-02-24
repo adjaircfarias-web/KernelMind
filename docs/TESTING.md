@@ -1,36 +1,36 @@
-# Estratégia de Testes – KernelMind
+# Testing Strategy – KernelMind
 
 ---
 
-## Onde estão os testes
+## Where Tests Live
 
 ```
 tests/
-├── KernelMind.UnitTests/       # Testes unitários (xUnit + Moq)
-└── KernelMind.IntegrationTests/ # Testes de integração (EF Core InMemory, APIs)
+├── KernelMind.UnitTests/       # Unit tests (xUnit + Moq)
+└── KernelMind.IntegrationTests/ # Integration tests (EF Core InMemory, APIs)
 ```
 
-- **Unitários:** serviços, plugins, value objects, regras de negócio isoladas.
-- **Integração:** repositórios, DbContext, endpoints (quando aplicável) contra ambiente controlado.
+- **Unit:** services, plugins, value objects, isolated business rules.
+- **Integration:** repositories, DbContext, endpoints (when applicable) against a controlled environment.
 
 ---
 
-## Como rodar
+## How to Run
 
 ```bash
-# Na raiz do repositório
+# From repository root
 
-# Apenas unitários
+# Unit only
 dotnet test tests/KernelMind.UnitTests
 
-# Apenas integração
+# Integration only
 dotnet test tests/KernelMind.IntegrationTests
 
-# Todos os testes
+# All tests
 dotnet test
 ```
 
-Para mais detalhes (verbosidade, filtros):
+For more detail (verbosity, filters):
 ```bash
 dotnet test --logger "console;verbosity=detailed"
 dotnet test --filter "FullyQualifiedName~MenuPlugin"
@@ -38,29 +38,29 @@ dotnet test --filter "FullyQualifiedName~MenuPlugin"
 
 ---
 
-## Ferramentas
+## Tools
 
-- **xUnit** – runner e asserções
-- **Moq** – mocks em testes unitários
-- **EF Core InMemory** – banco em memória nos testes de integração
-- **WebApplicationFactory** (se usado) – testes de endpoints com servidor em memória
-
----
-
-## Cobertura atual
-
-- **Unit:** ~31 testes (plugins, serviços, value objects).
-- **Integration:** ~15 testes (repositórios, fluxos com banco).
-- **Total:** ~46 testes.
-
-Áreas críticas priorizadas: plugins do Semantic Kernel, serviços de chat e RAG, repositórios e contratos de API (DTOs/validação).
+- **xUnit** – test runner and assertions
+- **Moq** – mocks in unit tests
+- **EF Core InMemory** – in-memory database in integration tests
+- **WebApplicationFactory** (if used) – in-memory server endpoint tests
 
 ---
 
-## Metas e boas práticas
+## Current Coverage
 
-- Manter testes estáveis e rápidos; integração sem dependência de serviços externos (Ollama, PostgreSQL real) quando possível.
-- Novos recursos de API ou regras de negócio devem vir acompanhados de testes (unit e/ou integração conforme o caso).
-- Em caso de falha, logs do `dotnet test` e do código sob teste devem ser suficientes para diagnosticar; evitar lógica obscura nos testes.
+- **Unit:** ~31 tests (plugins, services, value objects).
+- **Integration:** ~15 tests (repositories, database flows).
+- **Total:** ~46 tests.
 
-Para contribuir com testes, veja [CONTRIBUTING.md](CONTRIBUTING.md).
+Critical areas prioritized: Semantic Kernel plugins, chat and RAG services, repositories, and API contracts (DTOs/validation).
+
+---
+
+## Goals and Best Practices
+
+- Keep tests stable and fast; integration tests should avoid external services (Ollama, real PostgreSQL) when possible.
+- New API features or business rules should include tests (unit and/or integration as appropriate).
+- On failure, `dotnet test` output and code under test should be enough to diagnose; avoid obscure logic in tests.
+
+To contribute tests, see [CONTRIBUTING.md](CONTRIBUTING.md).

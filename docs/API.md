@@ -1,97 +1,97 @@
-# API REST – KernelMind
+# REST API – KernelMind
 
-Referência dos endpoints da API. Para experimentação interativa use o **Swagger**: `http://localhost:5076/swagger`.
+API endpoint reference. For interactive exploration use **Swagger**: `http://localhost:5076/swagger`.
 
 ---
 
 ## Base URL
 
 - Local: `http://localhost:5076`
-- Produção: conforme deploy (ex.: `https://api.seudominio.com`)
+- Production: as per deployment (e.g. `https://api.yourdomain.com`)
 
 ---
 
 ## Chat
 
-| Method | Endpoint | Descrição |
-|--------|----------|-----------|
-| POST | `/api/chat/message` | Enviar mensagem (resposta completa; suporta function calling) |
-| POST | `/api/chat/stream` | Resposta em streaming SSE (eventos em JSON) |
-| POST | `/api/chat/stream/raw` | Resposta em streaming SSE (texto puro) |
-| GET | `/api/chat/health` | Health check do serviço de chat |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/chat/message` | Send message (full response; supports function calling) |
+| POST | `/api/chat/stream` | SSE streaming response (JSON events) |
+| POST | `/api/chat/stream/raw` | SSE streaming response (plain text) |
+| GET | `/api/chat/health` | Chat service health check |
 
 ### POST /api/chat/message
 
 **Request (JSON):**
 ```json
 {
-  "message": "Quero ver o cardápio",
-  "sessionId": "opcional-uuid-ou-token"
+  "message": "I want to see the menu",
+  "sessionId": "optional-uuid-or-token"
 }
 ```
 
 **Response 200:**
 ```json
 {
-  "content": "Aqui está nosso cardápio...",
+  "content": "Here is our menu...",
   "sessionId": "abc-123",
   "timestamp": "2026-02-23T12:00:00Z"
 }
 ```
 
-**Validação:** `message` é obrigatório. Em caso de erro: `400` com `{ "error": "Message is required" }`.
+**Validation:** `message` is required. On error: `400` with `{ "error": "Message is required" }`.
 
 ---
 
 ### Streaming (SSE)
 
-Endpoints `POST /api/chat/stream` e `POST /api/chat/stream/raw` aceitam o mesmo body do `/api/chat/message`. Resposta: `Content-Type: text/event-stream`.
+Endpoints `POST /api/chat/stream` and `POST /api/chat/stream/raw` accept the same body as `/api/chat/message`. Response: `Content-Type: text/event-stream`.
 
-- **`/api/chat/stream`**: cada evento é um JSON, ex.: `data: {"chunk":"...","sessionId":"..."}\n\n`. Final: `data: [DONE]\n\n`. Em erro: um evento `data` com o JSON de erro.
-- **`/api/chat/stream/raw`**: cada evento é o texto do chunk: `data: <chunk>\n\n`. Final: `data: [DONE]\n\n`. Cancelamento: `data: [CANCELLED]\n\n`. Erro: `data: ERROR: <mensagem>\n\n`.
+- **`/api/chat/stream`**: each event is JSON, e.g. `data: {"chunk":"...","sessionId":"..."}\n\n`. End: `data: [DONE]\n\n`. On error: one `data` event with error JSON.
+- **`/api/chat/stream/raw`**: each event is the chunk text: `data: <chunk>\n\n`. End: `data: [DONE]\n\n`. Cancellation: `data: [CANCELLED]\n\n`. Error: `data: ERROR: <message>\n\n`.
 
 ---
 
 ## Menu
 
-| Method | Endpoint | Descrição |
-|--------|----------|-----------|
-| GET | `/api/menu` | Lista completa de pizzas disponíveis |
-| GET | `/api/menu/{id}` | Pizza por ID (guid) |
-| GET | `/api/menu/search?query=` | Busca por nome |
-| GET | `/api/menu/semantic-search?query=&threshold=&maxResults=` | Busca semântica (RAG) |
-| GET | `/api/menu/hybrid-search?query=&maxResults=` | Busca híbrida |
-| GET | `/api/menu/{id}/similar?maxResults=` | Pizzas similares |
-| GET | `/api/menu/categories` | Lista de categorias |
-| GET | `/api/menu/category/{name}` | Pizzas por categoria |
-| GET | `/api/menu/vectorization-status` | Status da vetorização |
-| POST | `/api/menu/vectorize` | Vetoriza todo o cardápio |
-| POST | `/api/menu/reindex` | Re-vetoriza cardápio |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/menu` | Full list of available pizzas |
+| GET | `/api/menu/{id}` | Pizza by ID (guid) |
+| GET | `/api/menu/search?query=` | Search by name |
+| GET | `/api/menu/semantic-search?query=&threshold=&maxResults=` | Semantic search (RAG) |
+| GET | `/api/menu/hybrid-search?query=&maxResults=` | Hybrid search |
+| GET | `/api/menu/{id}/similar?maxResults=` | Similar pizzas |
+| GET | `/api/menu/categories` | Category list |
+| GET | `/api/menu/category/{name}` | Pizzas by category |
+| GET | `/api/menu/vectorization-status` | Vectorization status |
+| POST | `/api/menu/vectorize` | Vectorize full menu |
+| POST | `/api/menu/reindex` | Re-vectorize menu |
 
 ---
 
 ## Orders
 
-| Method | Endpoint | Descrição |
-|--------|----------|-----------|
-| GET | `/api/orders` | Lista pedidos |
-| GET | `/api/orders/{id}` | Detalhes do pedido |
-| GET | `/api/orders/customer/{customerId}` | Pedidos por cliente |
-| GET | `/api/orders/status/{status}` | Pedidos por status |
-| POST | `/api/orders` | Criar pedido |
-| PATCH | `/api/orders/{id}/status` | Atualizar status |
-| POST | `/api/orders/{id}/cancel` | Cancelar pedido |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/orders` | List orders |
+| GET | `/api/orders/{id}` | Order details |
+| GET | `/api/orders/customer/{customerId}` | Orders by customer |
+| GET | `/api/orders/status/{status}` | Orders by status |
+| POST | `/api/orders` | Create order |
+| PATCH | `/api/orders/{id}/status` | Update status |
+| POST | `/api/orders/{id}/cancel` | Cancel order |
 
-**Criar pedido (POST /api/orders)** – body exemplo:
+**Create order (POST /api/orders)** – example body:
 ```json
 {
-  "customerId": "uuid-opcional",
-  "customerName": "Nome",
-  "deliveryAddress": "Endereço",
+  "customerId": "optional-uuid",
+  "customerName": "Name",
+  "deliveryAddress": "Address",
   "phone": "11999999999",
-  "notes": "opcional",
+  "notes": "optional",
   "items": [
-    { "pizzaId": "uuid-pizza", "quantity": 1, "notes": null }
+    { "pizzaId": "pizza-uuid", "quantity": 1, "notes": null }
   ]
 }
 ```
@@ -100,34 +100,34 @@ Endpoints `POST /api/chat/stream` e `POST /api/chat/stream/raw` aceitam o mesmo 
 
 ## Customers
 
-| Method | Endpoint | Descrição |
-|--------|----------|-----------|
-| GET | `/api/customers` | Lista clientes |
-| GET | `/api/customers/{id}` | Cliente por ID |
-| GET | `/api/customers/email/{email}` | Cliente por e-mail |
-| GET | `/api/customers/phone/{phone}` | Cliente por telefone |
-| POST | `/api/customers` | Criar cliente |
-| PUT | `/api/customers/{id}` | Atualizar cliente |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/customers` | List customers |
+| GET | `/api/customers/{id}` | Customer by ID |
+| GET | `/api/customers/email/{email}` | Customer by email |
+| GET | `/api/customers/phone/{phone}` | Customer by phone |
+| POST | `/api/customers` | Create customer |
+| PUT | `/api/customers/{id}` | Update customer |
 
 ---
 
 ## Health
 
-| Method | Endpoint | Descrição |
-|--------|----------|-----------|
-| GET | `/api/chat/health` | Status do serviço de chat |
-| GET | `/health` | Health geral (se configurado) |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/chat/health` | Chat service status |
+| GET | `/health` | General health (if configured) |
 
 ---
 
 ## CORS
 
-Em **desenvolvimento** a API aceita qualquer origem. Em **produção** são aceitas apenas as origens configuradas em `Cors:AllowedOrigins` (ex.: `http://localhost:4200`, origem do front em produção). Ver [SECURITY.md](SECURITY.md).
+In **development** the API allows any origin. In **production** only origins configured in `Cors:AllowedOrigins` are allowed (e.g. `http://localhost:4200`, production frontend origin). See [SECURITY.md](SECURITY.md).
 
 ---
 
-## Erros comuns
+## Common Errors
 
-- **400** – Dados inválidos (ex.: `message` vazio no chat, body de pedido inválido).
-- **404** – Recurso não encontrado (id de pizza, pedido ou cliente).
-- **500** – Erro interno (ex.: falha no LLM ou banco). Mensagem genérica no body; detalhes em logs do servidor.
+- **400** – Invalid data (e.g. empty `message` in chat, invalid order body).
+- **404** – Resource not found (pizza, order or customer id).
+- **500** – Internal error (e.g. LLM or database failure). Generic message in body; details in server logs.
