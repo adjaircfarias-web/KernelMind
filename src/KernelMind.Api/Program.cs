@@ -103,17 +103,16 @@ public class Program
 
         app.MapControllers();
 
-        if (seedOption)
+        using var scope = app.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        
+        var hasPizzas = await dbContext.Pizzas.AnyAsync();
+        if (!hasPizzas)
         {
-            using var scope = app.Services.CreateScope();
-            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            
-            logger.LogInformation("Running database seed...");
-            await SeedData.SeedAsync(context, logger);
-            logger.LogInformation("Seed completed!");
-            
-            return;
+            logger.LogInformation("No pizzas found. Running automatic seed...");
+            await SeedData.SeedAsync(dbContext, logger);
+            logger.LogInformation("Auto-seed completed!");
         }
 
         app.Run();
